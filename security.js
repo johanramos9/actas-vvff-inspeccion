@@ -79,12 +79,47 @@
     return result;
   }
 
+  function isIOSDevice() {
+    const agent = navigator.userAgent || "";
+    return /iPad|iPhone|iPod/.test(agent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
+  async function deliverPdf(blob, filename, title) {
+    if (!(blob instanceof Blob) || blob.type !== "application/pdf") throw new Error("El archivo PDF no es válido.");
+    if (isIOSDevice() && typeof File === "function" && typeof navigator.share === "function" && typeof navigator.canShare === "function") {
+      const file = new File([blob], filename, { type: "application/pdf", lastModified: Date.now() });
+      const shareData = { files: [file], title: title || "Acta de vivienda fiscal" };
+      if (navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return "shared";
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    if (isIOSDevice()) {
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+    } else {
+      link.download = filename;
+    }
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), isIOSDevice() ? 60000 : 3000);
+    return isIOSDevice() ? "opened" : "downloaded";
+  }
+
   window.ActaSecurity = Object.freeze({
     clearDraft,
     loadDraft,
     saveDraft,
     restoreFieldValue,
     cleanSignatures,
+    deliverPdf,
+    isIOSDevice,
+    pdfActionLabel: isIOSDevice() ? "Guardar / compartir PDF" : "Descargar PDF",
     limits: Object.freeze({
       maxSignatureStrokes: MAX_SIGNATURE_STROKES,
       maxPointsPerStroke: MAX_POINTS_PER_STROKE,
