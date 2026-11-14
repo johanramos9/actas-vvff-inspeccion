@@ -2,10 +2,11 @@
   "use strict";
 
   const STORAGE_KEY = "actas-vvff-acta2-v1";
-  const PAGE_WIDTH = 1754;
-  const PAGE_HEIGHT = 1240;
-  const PDF_WIDTH = 841.89;
-  const PDF_HEIGHT = 595.28;
+  // Oficio chileno (8,5 x 13 pulgadas), igual al formulario impreso.
+  const PAGE_WIDTH = 1275;
+  const PAGE_HEIGHT = 1950;
+  const PDF_WIDTH = 612;
+  const PDF_HEIGHT = 936;
 
   const locations = [
     ["hall", "Hall"], ["terraza", "Terraza"], ["pasillo", "Pasillo"], ["living", "Living"],
@@ -456,9 +457,7 @@
     return { canvas, ctx };
   }
 
-  function setFont(ctx, size = 12, weight = 400, style = "normal") {
-    ctx.font = `${style} ${weight} ${size}px Arial, sans-serif`;
-  }
+  function setFont(ctx, size = 12, weight = 400, style = "normal") { ctx.font = `${style} ${weight} ${size}px Arial, sans-serif`; }
 
   function wrapLines(ctx, text, maxWidth) {
     const words = String(text || "").split(/\s+/).filter(Boolean);
@@ -466,48 +465,29 @@
     let line = "";
     words.forEach((word) => {
       const candidate = line ? `${line} ${word}` : word;
-      if (line && ctx.measureText(candidate).width > maxWidth) { lines.push(line); line = word; }
-      else line = candidate;
+      if (line && ctx.measureText(candidate).width > maxWidth) { lines.push(line); line = word; } else line = candidate;
     });
     if (line) lines.push(line);
     return lines.length ? lines : [""];
   }
 
   function drawCell(ctx, x, y, width, height, text = "", options = {}) {
-    const { fill = "#fff", stroke = "#56616a", size = 10, weight = 400, align = "left", padding = 5, color = "#182431", maxLines = 3 } = options;
+    const { fill = "#fff", stroke = "#111", size = 11, weight = 400, align = "left", padding = 5, color = "#111", maxLines = 3, lineWidth = 1.2 } = options;
     ctx.fillStyle = fill;
     ctx.fillRect(x, y, width, height);
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineWidth;
     ctx.strokeRect(x, y, width, height);
     setFont(ctx, size, weight);
     ctx.fillStyle = color;
     ctx.textAlign = align;
-    const lines = wrapLines(ctx, text, width - padding * 2).slice(0, maxLines);
-    const lineHeight = size * 1.18;
+    const lines = wrapLines(ctx, text, Math.max(1, width - padding * 2)).slice(0, maxLines);
+    const lineHeight = size * 1.14;
     const startY = y + height / 2 - ((lines.length - 1) * lineHeight) / 2;
     lines.forEach((line, index) => {
       const textX = align === "center" ? x + width / 2 : align === "right" ? x + width - padding : x + padding;
       ctx.fillText(line, textX, startY + index * lineHeight);
     });
-  }
-
-  function drawHeader(ctx, page, title = "ACTA DE ENTREGA Y/O DEVOLUCIÓN DE VIVIENDA FISCAL") {
-    setFont(ctx, 10.5, 700);
-    ctx.fillStyle = "#26323b";
-    ctx.textAlign = "left";
-    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 22);
-    ctx.fillText("COMANDO DE PERSONAL", 44, 38);
-    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 44, 54);
-    setFont(ctx, 19, 700);
-    ctx.textAlign = "center";
-    ctx.fillText(title, PAGE_WIDTH / 2, 38);
-    setFont(ctx, 10, 700);
-    ctx.textAlign = "right";
-    ctx.fillText(`PÁGINA ${page} DE 4`, PAGE_WIDTH - 44, 38);
-    ctx.strokeStyle = "#172e42";
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(44, 64); ctx.lineTo(PAGE_WIDTH - 44, 64); ctx.stroke();
   }
 
   function formatDate(value) {
@@ -516,170 +496,196 @@
     return `${day || ""}-${month || ""}-${year || ""}`;
   }
 
-  function drawIdentity(ctx, data, y = 76) {
-    const x = 44;
-    const width = PAGE_WIDTH - 88;
-    const third = width / 3;
-    drawCell(ctx, x, y, third, 27, `GRADO: ${data.grado || ""}`, { size: 10, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x + third, y, third, 27, `RUT: ${data.rut || ""}`, { size: 10, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x + third * 2, y, third, 27, `N° EMPLEADO: ${data.empleado || ""}`, { size: 10, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x, y + 27, width * 0.53, 27, `NOMBRE: ${data.nombre || ""}`, { size: 10 });
-    drawCell(ctx, x + width * 0.53, y + 27, width * 0.25, 27, `UNIDAD: ${data.unidad || ""}`, { size: 9.5 });
-    drawCell(ctx, x + width * 0.78, y + 27, width * 0.22, 27, `RUT CÓNYUGE FACH: ${data.rutConyuge || ""}`, { size: 8.5 });
-    const address = [data.villa && `Villa ${data.villa}`, data.calle, data.block && `Block ${data.block}`, data.deptoCasa, data.numero && `N° ${data.numero}`].filter(Boolean).join(" · ");
-    drawCell(ctx, x, y + 54, width * 0.64, 27, `VIVIENDA: ${address}`, { size: 9.5 });
-    drawCell(ctx, x + width * 0.64, y + 54, width * 0.2, 27, `OPERACIÓN: ${[data.operacion, data.tipoOperacion].filter(Boolean).join(" · ")}`, { size: 8.5 });
-    drawCell(ctx, x + width * 0.84, y + 54, width * 0.16, 27, `FECHA: ${formatDate(data.fecha)}`, { size: 9 });
-    return y + 81;
+  function dateParts(value) {
+    if (!value) return { day: "", month: "", year: "" };
+    const [year, month, day] = value.split("-");
+    const monthName = ["", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"][Number(month)] || month;
+    return { day, month: monthName, year };
   }
 
-  function drawMatrixPage(pageNumber, locationSlice, data) {
-    const { canvas, ctx } = createPage();
-    drawHeader(ctx, pageNumber);
-    let y = drawIdentity(ctx, data, 76) + 10;
-    const x = 44;
-    const fullWidth = PAGE_WIDTH - 88;
-    const categoryWidth = 118;
-    const detailWidth = 242;
-    const roomWidth = (fullWidth - categoryWidth - detailWidth) / locationSlice.length;
-    drawCell(ctx, x, y, categoryWidth, 46, "ÍTEM", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    drawCell(ctx, x + categoryWidth, y, detailWidth, 46, "DETALLE", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    locationSlice.forEach(([id, name], index) => drawCell(ctx, x + categoryWidth + detailWidth + roomWidth * index, y, roomWidth, 46, name.toUpperCase(), { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 8, padding: 3 }));
-    y += 46;
-    const rowHeight = 13.2;
-    groups.forEach((group) => {
-      const groupHeight = group.items.length * rowHeight;
-      drawCell(ctx, x, y, categoryWidth, groupHeight, group.name.toUpperCase(), { fill: "#edf1f3", align: "center", weight: 700, size: 8, padding: 4, maxLines: 5 });
+  function drawOrganization(ctx) {
+    setFont(ctx, 15, 400); ctx.fillStyle = "#111"; ctx.textAlign = "left";
+    ctx.fillText("FUERZA AÉREA DE CHILE", 82, 70);
+    ctx.fillText("COMANDO DE PERSONAL", 82, 96);
+    setFont(ctx, 15, 400); ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 82, 122);
+    ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(82, 134); ctx.lineTo(306, 134); ctx.stroke();
+  }
+
+  function drawPersonnelBox(ctx, data) {
+    const x = 720, y = 48, w = 478;
+    drawCell(ctx, x, y, w, 54, "", { lineWidth: 2 });
+    setFont(ctx, 12, 700); ctx.textAlign = "left";
+    ctx.fillText(`GRADO  ${data.grado || ""}`, x + 8, y + 18);
+    ctx.fillText(`RUT  ${data.rut || ""}`, x + 172, y + 18);
+    ctx.fillText(`NRO. EMPL.  ${data.empleado || ""}`, x + 322, y + 18);
+    drawCell(ctx, x, y + 54, w, 54, `NOMBRE  ${data.nombre || ""}`, { weight: 700, size: 12, lineWidth: 2 });
+    drawCell(ctx, x, y + 108, w, 54, "", { lineWidth: 2 });
+    setFont(ctx, 12, 700); ctx.fillText(`UNIDAD  ${data.unidad || ""}`, x + 8, y + 126);
+    ctx.fillText(`RUT CÓNYUGE FACH  ${data.rutConyuge || ""}`, x + 204, y + 126);
+  }
+
+  function drawActa2Heading(ctx, data) {
+    drawOrganization(ctx);
+    drawPersonnelBox(ctx, data);
+    setFont(ctx, 17, 700); ctx.textAlign = "left"; ctx.fillStyle = "#111";
+    const selected = (label) => data.tipoOperacion === label ? "X" : "";
+    ctx.fillText(`ACTA DE ENTREGA / DEVOLUCIÓN DE VIVIENDA FISCAL   (1° Vez ${selected("1ª vez")}   Definitiva ${selected("Definitiva")}   Cambio ${selected("Cambio")})`, 54, 232);
+    ctx.beginPath(); ctx.moveTo(54, 246); ctx.lineTo(678, 246); ctx.stroke();
+    const parts = dateParts(data.fecha);
+    const address = `Villa ${data.villa || ""}   Calle ${data.calle || ""}   Block ${data.block || ""}   Depto. o Casa ${data.deptoCasa || ""}`;
+    drawCell(ctx, 54, 270, 1167, 132, "", { lineWidth: 2 });
+    setFont(ctx, 14, 400); ctx.textAlign = "left";
+    ctx.fillText(`En Santiago, a ${parts.day} días del mes de ${parts.month} de ${parts.year}, el jefe del Departamento Habitacional, procedió a entregar la`, 62, 296);
+    ctx.fillText("vivienda fiscal ubicada en:", 62, 322);
+    ctx.fillText(address, 62, 362);
+    ctx.fillText(`N° ${data.numero || ""}, con las observaciones que a continuación se detallan:`, 62, 388);
+  }
+
+  function drawMatrix(ctx, locationSlice, selectedGroups, x, y, width, rowHeight) {
+    const groupWidth = 118;
+    const detailWidth = 190;
+    const roomWidth = (width - groupWidth - detailWidth) / locationSlice.length;
+    const headerHeight = 54;
+    drawCell(ctx, x, y, groupWidth, headerHeight, "ÍTEM", { align: "center", weight: 700, size: 10, lineWidth: 2 });
+    drawCell(ctx, x + groupWidth, y, detailWidth, headerHeight, "DETALLE", { align: "center", weight: 700, size: 10, lineWidth: 2 });
+    locationSlice.forEach(([, name], index) => drawCell(ctx, x + groupWidth + detailWidth + roomWidth * index, y, roomWidth, headerHeight, name.toUpperCase().replace("DORMITORIO", "DORM."), { align: "center", weight: 700, size: 8.2, padding: 2, maxLines: 2, lineWidth: 2 }));
+    y += headerHeight;
+    selectedGroups.forEach((group) => {
+      drawCell(ctx, x, y, groupWidth, group.items.length * rowHeight, group.name.toUpperCase(), { align: "center", weight: 700, size: 8.2, padding: 4, maxLines: 5, lineWidth: 1.6 });
       group.items.forEach(([itemId, itemName]) => {
-        drawCell(ctx, x + categoryWidth, y, detailWidth, rowHeight, itemName, { size: 8, padding: 4 });
-        locationSlice.forEach(([locationId], index) => {
-          const value = state.matrix[locationId][itemId] || "";
-          const fill = value === "B" ? "#e6f5ec" : value === "R" ? "#fff3da" : value === "M" ? "#fdeaea" : "#fff";
-          const color = value === "B" ? "#25865a" : value === "R" ? "#9b5c12" : value === "M" ? "#ba3a3a" : "#182431";
-          drawCell(ctx, x + categoryWidth + detailWidth + roomWidth * index, y, roomWidth, rowHeight, value, { fill, color, align: "center", weight: 700, size: 8 });
-        });
+        drawCell(ctx, x + groupWidth, y, detailWidth, rowHeight, itemName.toUpperCase(), { size: 8.2, padding: 4 });
+        locationSlice.forEach(([locationId], index) => drawCell(ctx, x + groupWidth + detailWidth + roomWidth * index, y, roomWidth, rowHeight, state.matrix[locationId]?.[itemId] || "", { align: "center", weight: 700, size: 10 }));
         y += rowHeight;
       });
     });
-    setFont(ctx, 9, 700);
-    ctx.fillStyle = "#465664";
-    ctx.textAlign = "left";
-    ctx.fillText("B: BUENO   ·   R: REGULAR   ·   M: MALO", x, PAGE_HEIGHT - 24);
-    return canvas;
+    return y;
   }
 
-  function drawNoveltiesPage(data) {
-    const { canvas, ctx } = createPage();
-    drawHeader(ctx, 3, "DETALLE DE NOVEDADES");
-    let y = drawIdentity(ctx, data, 76) + 12;
-    const margin = 44;
-    const gap = 18;
-    const columnWidth = (PAGE_WIDTH - margin * 2 - gap) / 2;
-    const halves = [locations.slice(0, 9), locations.slice(9)];
-    halves.forEach((half, column) => {
-      let rowY = y;
-      half.forEach(([id, name]) => {
-        drawCell(ctx, margin + column * (columnWidth + gap), rowY, 150, 64, name.toUpperCase(), { fill: "#edf1f3", weight: 700, size: 9, align: "center" });
-        drawCell(ctx, margin + column * (columnWidth + gap) + 150, rowY, columnWidth - 150, 64, state.novelties[id] || "", { size: 8.5, padding: 7, maxLines: 5 });
-        rowY += 64;
-      });
-    });
-    y += 9 * 64 + 18;
-    drawCell(ctx, margin, y, PAGE_WIDTH - margin * 2, 30, "EXTERIOR VIVIENDA / CONDICIÓN", { fill: "#273746", color: "#fff", weight: 700, size: 10, align: "center" });
-    y += 30;
-    const exteriorWidth = (PAGE_WIDTH - margin * 2) / exteriorItems.length;
+  function drawExterior(ctx, x, y, width) {
+    const labelWidth = 250;
+    const valueWidth = 92;
+    drawCell(ctx, x, y, labelWidth, 28, "EXTERIOR VIVIENDA", { weight: 700, size: 9, lineWidth: 2 });
+    drawCell(ctx, x + labelWidth, y, valueWidth * 3, 28, "CONDICIÓN", { align: "center", weight: 700, size: 9, lineWidth: 2 });
+    setFont(ctx, 10, 700); ctx.textAlign = "left";
+    ctx.fillText("B: BUENO", x + labelWidth + valueWidth * 3 + 65, y + 45);
+    ctx.fillText("R: REGULAR", x + labelWidth + valueWidth * 3 + 65, y + 91);
+    ctx.fillText("M: MALO", x + labelWidth + valueWidth * 3 + 65, y + 137);
     exteriorItems.forEach(([id, name], index) => {
-      const item = state.exterior[id];
-      drawCell(ctx, margin + index * exteriorWidth, y, exteriorWidth, 42, name.toUpperCase(), { fill: "#edf1f3", weight: 700, size: 8, align: "center" });
-      drawCell(ctx, margin + index * exteriorWidth, y + 42, exteriorWidth, 40, [item.value, item.detail].filter(Boolean).join(" · "), { size: 9, align: "center" });
+      const rowY = y + 28 + index * 22;
+      const item = state.exterior[id] || { value: "", detail: "" };
+      drawCell(ctx, x, rowY, labelWidth, 22, name.toUpperCase(), { size: 7.8 });
+      drawCell(ctx, x + labelWidth, rowY, valueWidth, 22, item.value === "Sí" ? "SÍ" : "", { align: "center", size: 8.4 });
+      drawCell(ctx, x + labelWidth + valueWidth, rowY, valueWidth, 22, item.value === "No" ? "NO" : "", { align: "center", size: 8.4 });
+      drawCell(ctx, x + labelWidth + valueWidth * 2, rowY, valueWidth, 22, item.detail || "", { align: "center", size: 7.4 });
     });
-    return canvas;
+    return y + 28 + exteriorItems.length * 22;
   }
 
-  function drawSignature(ctx, key, title, name, x, y, width, height) {
-    ctx.strokeStyle = "#56616a";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, width, height);
-    const pad = state.signaturePads[key];
-    if (pad?.strokes.length) ctx.drawImage(pad.canvas, x + 28, y + 8, width - 56, height - 52);
-    ctx.beginPath(); ctx.moveTo(x + 28, y + height - 38); ctx.lineTo(x + width - 28, y + height - 38); ctx.stroke();
-    setFont(ctx, 9, 700); ctx.fillStyle = "#26323b"; ctx.textAlign = "center"; ctx.fillText(title.toUpperCase(), x + width / 2, y + height - 25);
-    setFont(ctx, 8, 400); ctx.fillStyle = "#56616a"; ctx.fillText(name || "Grado y nombre", x + width / 2, y + height - 11);
-  }
-
-  function drawClosingPage(data) {
+  function drawFirstPage(data) {
     const { canvas, ctx } = createPage();
-    drawHeader(ctx, 4, "CIERRE ADMINISTRATIVO Y FIRMAS");
-    const margin = 44;
-    const fullWidth = PAGE_WIDTH - margin * 2;
-    let y = drawIdentity(ctx, data, 76) + 12;
-    const leftW = fullWidth * 0.54;
-    const rightX = margin + leftW + 16;
-    const rightW = fullWidth - leftW - 16;
-    const sectionY = y;
-    drawCell(ctx, margin, y, leftW, 30, "CONSUMOS BÁSICOS Y PROPIEDAD", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    y += 30;
-    const controlRows = [
-      ["Rol propiedad", data.rolPropiedad], ["N° cliente agua", data.clienteAgua], ["N° cliente electricidad", data.clienteElectricidad], ["N° cliente gas", data.clienteGas],
-      ["Estado luz", data.estadoLuz], ["Estado agua", data.estadoAgua], ["Estado gas", data.estadoGas], ["Aseo domiciliario", data.aseoDomiciliario],
-      ["Gastos comunes", data.gastosComunes], ["N° de llaves", data.numeroLlaves], ["Controles remotos", data.controlesRemotos],
-    ];
-    controlRows.forEach(([label, value]) => {
-      drawCell(ctx, margin, y, 200, 27, label.toUpperCase(), { fill: "#edf1f3", weight: 700, size: 8.5 });
-      drawCell(ctx, margin + 200, y, leftW - 200, 27, value || "", { size: 9 });
-      y += 27;
-    });
-    const financeY = y + 14;
-    drawCell(ctx, margin, financeY, leftW, 30, "USO SECCIÓN GESTIÓN FINANCIERA", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    const financeRows = [
-      ["DRAA 5,5%", formatDate(data.draaCese), formatDate(data.draaInicio)],
-      ["Gasto común", formatDate(data.gastoCese), formatDate(data.gastoInicio)],
-      ["Fecha", formatDate(data.fechaGestion), data.responsableFinanzas || ""],
-    ];
-    drawCell(ctx, margin, financeY + 30, 170, 28, "ÍTEM", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + 170, financeY + 30, (leftW - 170) / 2, 28, "CESE DESCUENTO", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + 170 + (leftW - 170) / 2, financeY + 30, (leftW - 170) / 2, 28, "INICIO / RESPONSABLE", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    financeRows.forEach((row, index) => {
-      const rowY = financeY + 58 + index * 31;
-      drawCell(ctx, margin, rowY, 170, 31, row[0], { weight: 700, size: 8.5 });
-      drawCell(ctx, margin + 170, rowY, (leftW - 170) / 2, 31, row[1], { align: "center", size: 8.5 });
-      drawCell(ctx, margin + 170 + (leftW - 170) / 2, rowY, (leftW - 170) / 2, 31, row[2], { align: "center", size: 8.5 });
-    });
-
-    const rightY = drawDocuments(ctx, data, rightX, sectionY, rightW);
-
-    const noteY = Math.max(financeY + 166, rightY + 14, 620);
-    drawCell(ctx, margin, noteY, fullWidth, 66, "NOTA: Si al momento de la devolución no se entregan boletas, comprobantes de pago o certificados exigidos, el usuario dispondrá de 5 días hábiles para regularizar las observaciones. Plazo para efectuar observaciones: 30 días desde la fecha de la presente acta.", { fill: "#f7f8f8", size: 9, padding: 10, maxLines: 4 });
-    const signY = noteY + 82;
-    const signGap = 14;
-    const signW = (fullWidth - signGap) / 2;
-    const signH = 190;
-    drawSignature(ctx, "recibe", "Recibe", data.firmaNombre_recibe, margin, signY, signW, signH);
-    drawSignature(ctx, "devuelve", "Devuelve", data.firmaNombre_devuelve, margin + signW + signGap, signY, signW, signH);
-    drawSignature(ctx, "inspector", "Inspector fiscal", data.firmaNombre_inspector, margin, signY + signH + 14, signW, signH);
-    drawSignature(ctx, "jefe", "Jefe Depto. / Sección Habitacional", data.firmaNombre_jefe, margin + signW + signGap, signY + signH + 14, signW, signH);
+    drawActa2Heading(ctx, data);
+    const pageGroups = groups.filter((group) => ["pintura", "ventanas", "puertas", "closet", "electrica", "pisos", "varios"].includes(group.id));
+    const endY = drawMatrix(ctx, locations.slice(0, 12), pageGroups, 54, 428, 1167, 22.5);
+    drawExterior(ctx, 54, endY, 1167);
     return canvas;
   }
 
-  function drawDocuments(ctx, data, x, y, width) {
-    drawCell(ctx, x, y, width, 30, "DOCUMENTOS ENTREGADOS", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    let rowY = y + 30;
-    documentItems.forEach(([id, label]) => {
-      drawCell(ctx, x, rowY, width - 60, 26, label, { size: 8.5 });
-      drawCell(ctx, x + width - 60, rowY, 60, 26, data[`doc_${id}`] ? "SÍ" : "", { fill: data[`doc_${id}`] ? "#e6f5ec" : "#fff", color: "#25865a", align: "center", weight: 700, size: 8.5 });
-      rowY += 26;
+  function drawNoveltiesPage() {
+    const { canvas, ctx } = createPage();
+    setFont(ctx, 18, 700); ctx.fillStyle = "#111"; ctx.textAlign = "center";
+    ctx.fillText("DETALLE DE NOVEDADES", PAGE_WIDTH / 2, 62);
+    const noveltyRows = [
+      ["hall", "Hall"], ["living", "Living"], ["comedor", "Comedor"], ["dorm1", "Dormitorio 1"], ["dorm2", "Dormitorio 2"], ["dorm3", "Dormitorio 3"],
+      ["dorm4", "Dormitorio 4"], ["sala-estar", "Sala de estar"], ["dorm-servicio", "Dorm. servicio"], ["cocina", "Cocina"], ["bano1", "Baño 1"],
+      ["bano2", "Baño 2"], ["bano3", "Baño 3"], ["bano4", "Baño 4"], ["loggia", "Loggia"], ["otros", "Otros"],
+    ];
+    const others = ["terraza", "pasillo", "bodega"].map((id) => state.novelties[id]).filter(Boolean).join(" | ");
+    let y = 88;
+    noveltyRows.forEach(([id, name]) => {
+      drawCell(ctx, 54, y, 165, 105, name.toUpperCase(), { size: 10, weight: 700 });
+      drawCell(ctx, 219, y, 1002, 105, id === "otros" ? others : state.novelties[id] || "", { size: 10, padding: 9, maxLines: 7 });
+      y += 105;
+    });
+    return canvas;
+  }
+
+  function drawFinancePanel(ctx, data, x, y, width) {
+    drawCell(ctx, x, y, width, 34, "USO SECCIÓN GESTIÓN FINANCIERA", { align: "center", weight: 700, size: 10, lineWidth: 2 });
+    drawCell(ctx, x, y + 34, 90, 56, "ÍTEM", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    drawCell(ctx, x + 90, y + 34, (width - 90) / 2, 28, "DEVOLUCIÓN", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    drawCell(ctx, x + 90, y + 62, (width - 90) / 2, 28, "CESE DESCUENTO", { align: "center", weight: 700, size: 7, lineWidth: 2 });
+    drawCell(ctx, x + 90 + (width - 90) / 2, y + 34, (width - 90) / 2, 28, "ENTREGA", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    drawCell(ctx, x + 90 + (width - 90) / 2, y + 62, (width - 90) / 2, 28, "INICIO DESCUENTO", { align: "center", weight: 700, size: 7, lineWidth: 2 });
+    const rows = [["DRAA 5,5%", formatDate(data.draaCese), formatDate(data.draaInicio)], ["GASTO COMÚN", formatDate(data.gastoCese), formatDate(data.gastoInicio)], ["FECHA", formatDate(data.fechaGestion), data.responsableFinanzas || ""]];
+    rows.forEach((row, index) => {
+      const rowY = y + 90 + index * 48;
+      drawCell(ctx, x, rowY, 90, 48, row[0], { weight: 700, size: 7.5 });
+      drawCell(ctx, x + 90, rowY, (width - 90) / 2, 48, row[1], { align: "center", size: 8 });
+      drawCell(ctx, x + 90 + (width - 90) / 2, rowY, (width - 90) / 2, 48, row[2], { align: "center", size: 8 });
+    });
+    drawCell(ctx, x, y + 234, width, 44, "FIRMA RESPONSABLE", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    drawCell(ctx, x, y + 278, width, 92, data.responsableFinanzas || "NOMBRE RESPONSABLE", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    return y + 370;
+  }
+
+  function drawAdministrativePanel(ctx, data, x, y, width) {
+    drawCell(ctx, x, y, 165, 45, "ROL PROPIEDAD", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    drawCell(ctx, x + 165, y, width - 165, 45, data.rolPropiedad || "", { align: "center", size: 8, lineWidth: 2 });
+    drawCell(ctx, x, y + 54, width, 30, "N° CLIENTE CONSUMOS BÁSICOS", { align: "center", weight: 700, size: 8, lineWidth: 2 });
+    [["AGUA", data.clienteAgua], ["ELECT.", data.clienteElectricidad], ["GAS", data.clienteGas]].forEach((row, index) => {
+      drawCell(ctx, x, y + 84 + index * 46, 82, 46, row[0], { align: "center", weight: 700, size: 8 });
+      drawCell(ctx, x + 82, y + 84 + index * 46, width - 82, 46, row[1] || "", { size: 8 });
+    });
+    let rowY = y + 230;
+    drawCell(ctx, x, rowY, width, 28, "ENTREGA BOLETAS Y BOUCHER DE PAGOS", { weight: 700, size: 7.5, lineWidth: 2 });
+    rowY += 28;
+    drawCell(ctx, x, rowY, 82, 28, "", { lineWidth: 2 }); drawCell(ctx, x + 82, rowY, (width - 82) / 2, 28, "BOLETA", { align: "center", weight: 700, size: 7, lineWidth: 2 }); drawCell(ctx, x + 82 + (width - 82) / 2, rowY, (width - 82) / 2, 28, "BOUCHER", { align: "center", weight: 700, size: 7, lineWidth: 2 });
+    rowY += 28;
+    const docs = [["AGUA", "boleta-agua", "pago-agua"], ["ELECT.", "boleta-electricidad", "pago-electricidad"], ["GAS", "boleta-gas", "pago-gas"], ["ASEO DOM.", "boleta-aseo", "pago-aseo"]];
+    docs.forEach(([label, bill, receipt]) => {
+      drawCell(ctx, x, rowY, 82, 28, label, { weight: 700, size: 7 });
+      drawCell(ctx, x + 82, rowY, (width - 82) / 2, 28, data[`doc_${bill}`] ? "X" : "", { align: "center", weight: 700, size: 9 });
+      drawCell(ctx, x + 82 + (width - 82) / 2, rowY, (width - 82) / 2, 28, data[`doc_${receipt}`] ? "X" : "", { align: "center", weight: 700, size: 9 });
+      rowY += 28;
+    });
+    rowY += 12;
+    [["ENTREGA CERTIFICADOS", ""], ["JJ.AA.", data["doc_cert-junta"] ? "X" : ""], ["NOTARIO", data["doc_cert-notario"] ? "X" : ""], ["CALEF-CALD-ENC", data["doc_cert-calefon"] ? "X" : ""]].forEach((row) => {
+      drawCell(ctx, x, rowY, 165, 28, row[0], { weight: 700, size: 7.2 }); drawCell(ctx, x + 165, rowY, width - 165, 28, row[1], { align: "center", weight: 700, size: 8 }); rowY += 28;
+    });
+    drawCell(ctx, x, rowY, width, 28, "ESTADO DE CONSUMOS", { align: "center", weight: 700, size: 8, lineWidth: 2 }); rowY += 28;
+    [["LUZ", data.estadoLuz], ["AGUA", data.estadoAgua], ["GAS", data.estadoGas], ["ASEO DOM.", data.aseoDomiciliario], ["G. COMUNES", data.gastosComunes], ["N° DE LLAVES", data.numeroLlaves], ["CTRL REMOTO", data.controlesRemotos]].forEach((row) => {
+      drawCell(ctx, x, rowY, 165, 27, row[0], { weight: 700, size: 7 }); drawCell(ctx, x + 165, rowY, width - 165, 27, row[1] || "", { size: 7.5 }); rowY += 27;
     });
     return rowY;
   }
 
+  function drawSignatureLine(ctx, key, title, name, x, y, width, height) {
+    const pad = state.signaturePads[key];
+    if (pad?.strokes.length) ctx.drawImage(pad.canvas, x + 20, y, width - 40, height - 42);
+    ctx.strokeStyle = "#111"; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x + 18, y + height - 40); ctx.lineTo(x + width - 18, y + height - 40); ctx.stroke();
+    setFont(ctx, 9, 700); ctx.fillStyle = "#111"; ctx.textAlign = "center"; ctx.fillText(title.toUpperCase(), x + width / 2, y + height - 24);
+    setFont(ctx, 8, 400); ctx.fillText(name || "", x + width / 2, y + height - 10);
+  }
+
+  function drawThirdPage(data) {
+    const { canvas, ctx } = createPage();
+    const pageGroups = groups.filter((group) => ["pintura", "ventanas", "puertas", "electrica", "lavaplatos", "mueble-lavaplatos", "gas", "muebles", "pisos", "accesorios"].includes(group.id));
+    drawMatrix(ctx, locations.slice(12), pageGroups, 54, 54, 725, 17.1);
+    drawFinancePanel(ctx, data, 820, 54, 401);
+    drawAdministrativePanel(ctx, data, 820, 450, 401);
+    drawCell(ctx, 54, 1115, 1167, 30, "DETALLE DE NOVEDADES", { weight: 700, size: 12, lineWidth: 0 });
+    drawCell(ctx, 54, 1145, 1167, 92, "NOTA: Si al momento de la devolución de la vivienda fiscal el usuario no entrega las boletas, comprobantes de pago de consumos básicos, pago por aseo domiciliario, mantención del calefón o los certificados requeridos, dispondrá de 5 días hábiles para regularizar las observaciones.", { size: 8.8, weight: 700, padding: 8, maxLines: 6 });
+    setFont(ctx, 9, 700); ctx.textAlign = "center"; ctx.fillText("Plazo para efectuar observaciones: 30 días a contar de la fecha de la presente Acta (Sólo por escrito)", PAGE_WIDTH / 2, 1262);
+    drawSignatureLine(ctx, "recibe", "Recibe", data.firmaNombre_recibe, 55, 1320, 340, 170);
+    drawSignatureLine(ctx, "devuelve", "Devuelve", data.firmaNombre_devuelve, 468, 1320, 340, 170);
+    drawSignatureLine(ctx, "inspector", "Inspector fiscal", data.firmaNombre_inspector, 881, 1320, 340, 170);
+    drawSignatureLine(ctx, "jefe", "Jefe Depto. / Sección Habitacional", data.firmaNombre_jefe, 360, 1550, 555, 175);
+    return canvas;
+  }
+
   function renderDocumentPages() {
     const data = collectFormData();
-    state.previewCanvases = [
-      drawMatrixPage(1, locations.slice(0, 9), data),
-      drawMatrixPage(2, locations.slice(9), data),
-      drawNoveltiesPage(data),
-      drawClosingPage(data),
-    ];
+    state.previewCanvases = [drawFirstPage(data), drawNoveltiesPage(), drawThirdPage(data)];
     renderPreviewTabs();
     showPreviewPage(state.previewPage);
   }
