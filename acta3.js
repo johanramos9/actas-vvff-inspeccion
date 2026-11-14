@@ -354,8 +354,11 @@
       const pad = { canvas, context: canvas.getContext("2d"), strokes: state.signatureStrokes[key] || [], activeStroke: null };
       state.signaturePads[key] = pad;
       resizeSignaturePad(pad);
-      canvas.addEventListener("pointerdown", (event) => beginStroke(event, pad));
-      canvas.addEventListener("pointermove", (event) => continueStroke(event, pad));
+      canvas.draggable = false;
+      canvas.addEventListener("selectstart", (event) => event.preventDefault());
+      canvas.addEventListener("dragstart", (event) => event.preventDefault());
+      canvas.addEventListener("pointerdown", (event) => beginStroke(event, pad), { passive: false });
+      canvas.addEventListener("pointermove", (event) => continueStroke(event, pad), { passive: false });
       canvas.addEventListener("pointerup", () => endStroke(pad));
       canvas.addEventListener("pointercancel", () => endStroke(pad));
       canvas.addEventListener("pointerleave", () => { if (pad.activeStroke) endStroke(pad); });
@@ -371,6 +374,7 @@
 
   function resizeSignaturePad(pad) {
     const rect = pad.canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     pad.canvas.width = Math.max(1, Math.round(rect.width * ratio));
     pad.canvas.height = Math.max(1, Math.round(rect.height * ratio));
@@ -441,8 +445,9 @@
       button.classList.toggle("is-complete", buttonIndex < state.currentStep);
     });
     previousButton.disabled = state.currentStep === 0;
-    nextButton.innerHTML = state.currentStep === 4 ? `Descargar PDF <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>` : `Continuar <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>`;
+    nextButton.innerHTML = state.currentStep === 4 ? `${window.ActaSecurity.pdfActionLabel} <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>` : `Continuar <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>`;
     document.querySelector("#stepCounter").textContent = state.currentStep + 1;
+    if (state.currentStep === 3) window.requestAnimationFrame(() => Object.values(state.signaturePads).forEach(resizeSignaturePad));
     if (state.currentStep === 4) renderDocumentPages();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -906,7 +911,7 @@
     return String(value || "sin-nombre").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 55);
   }
 
-  function downloadPdf() {
+  async function downloadPdf() {
     if (!ensureInitialDataIsValid()) return;
     saveDraft();
     renderDocumentPages();
@@ -914,28 +919,20 @@
     const original = button.innerHTML;
     button.disabled = true;
     button.textContent = "Generando PDF…";
-    window.setTimeout(() => {
-      try {
-        const blob = createPdfBlob(state.previewCanvases);
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        const data = collectFormData();
-        link.href = url;
-        link.download = `acta-3-vivienda-${safeFilename(data.nombre || data.rut)}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.setTimeout(() => URL.revokeObjectURL(url), 3000);
-        showToast("PDF descargado correctamente");
-        window.setTimeout(() => openFinishModal(true), 350);
-      } catch (error) {
-        console.error(error);
-        showToast("No fue posible generar el PDF");
-      } finally {
-        button.disabled = false;
-        button.innerHTML = original;
-      }
-    }, 60);
+    try {
+      const blob = createPdfBlob(state.previewCanvases);
+      const data = collectFormData();
+      const filename = `acta-3-vivienda-${safeFilename(data.nombre || data.rut)}.pdf`;
+      const result = await window.ActaSecurity.deliverPdf(blob, filename, "Acta 3 de vivienda fiscal");
+      saveDraft();
+      showToast(result === "shared" ? "PDF listo para guardar o compartir. Tu borrador se mantiene." : result === "opened" ? "PDF abierto. Usa Compartir para guardarlo; tu borrador se mantiene." : "PDF descargado. Tu borrador se mantiene.");
+    } catch (error) {
+      if (error?.name === "AbortError") showToast("Acción cancelada. Tu borrador se mantiene.");
+      else { console.error(error); showToast("No fue posible generar el PDF"); }
+    } finally {
+      button.disabled = false;
+      button.innerHTML = original;
+    }
   }
 
   function initializeDefaults() {
@@ -955,6 +952,7 @@
     renderInspectionGroups();
     setupSignaturePads();
     setupEvents();
+    document.querySelector("#downloadPdf").textContent = window.ActaSecurity.pdfActionLabel;
     updateProgress();
     showStep(0);
   }
