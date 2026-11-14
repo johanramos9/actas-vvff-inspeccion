@@ -168,9 +168,9 @@
 
             <section class="form-step" data-step="4" hidden aria-labelledby="a2Step4Title">
               <div class="section-heading document-heading"><div><span class="eyebrow">Paso 5 de 5</span><h2 id="a2Step4Title">Documento listo para revisar</h2><p>El PDF se crea en este dispositivo y conserva el formato de matriz del acta.</p></div><button type="button" class="button secondary" id="refreshPreview">Actualizar vista</button></div>
-              <div class="export-card"><div class="export-icon"><svg viewBox="0 0 24 24"><path d="M7 2h7l5 5v15H7zM14 2v5h5M12 11v7M9 15l3 3 3-3"/></svg></div><div><span class="card-kicker">Exportación local</span><h3>Acta 2 · Formato matriz</h3><p>4 páginas A4 apaisadas, listas para guardar o imprimir.</p></div><div class="export-actions"><button type="button" class="button primary download-button" id="downloadPdf">Descargar PDF</button><button type="button" class="button secondary" id="startNewActa">Nueva acta</button></div></div>
+              <div class="export-card"><div class="export-icon"><svg viewBox="0 0 24 24"><path d="M7 2h7l5 5v15H7zM14 2v5h5M12 11v7M9 15l3 3 3-3"/></svg></div><div><span class="card-kicker">Exportación local</span><h3>Acta 2 · Formato matriz</h3><p>3 páginas oficio verticales, con la misma distribución del formulario impreso.</p></div><div class="export-actions"><button type="button" class="button primary download-button" id="downloadPdf">Descargar PDF</button><button type="button" class="button secondary" id="startNewActa">Nueva acta</button></div></div>
               <div class="resume-note"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7"/></svg><span><strong>El borrador queda guardado.</strong> Cambiar entre Acta 1 y Acta 2 no borra lo que hayas escrito.</span></div>
-              <div class="preview-toolbar"><div><strong>Vista previa</strong><span>4 páginas · A4 apaisado</span></div><div class="preview-tabs" id="previewTabs" role="tablist"></div></div>
+              <div class="preview-toolbar"><div><strong>Vista previa</strong><span>3 páginas · oficio vertical</span></div><div class="preview-tabs" id="previewTabs" role="tablist"></div></div>
               <div class="document-preview"><div class="paper wide-paper"><canvas id="previewCanvas"></canvas></div></div>
             </section>
           </form>
@@ -183,6 +183,6 @@
     <div class="modal-backdrop" id="finishModal" hidden><section class="finish-modal" role="dialog" aria-modal="true"><div class="finish-modal-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></div><span class="card-kicker" id="finishKicker">Descarga completada</span><h2 id="finishTitle">PDF descargado correctamente</h2><p id="finishDescription">Puedes mantener este borrador o comenzar una nueva Acta 2.</p><div class="finish-options"><button type="button" class="finish-option keep" id="keepDraft"><span class="finish-option-icon"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7"/></svg></span><span><strong>Mantener borrador</strong><small>Podrás retomarla después</small></span></button><button type="button" class="finish-option new" id="confirmNewActa"><span class="finish-option-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Iniciar nueva acta</strong><small>Limpiará campos y firmas</small></span></button></div><button type="button" class="modal-cancel" id="cancelModal">Cancelar</button></section></div>
     <script src="security.js?v=20261114-1"></script>
     <script src="validation.js?v=20261114-1"></script>
-    <script src="acta2.js?v=20261114-1"></script>
+    <script src="acta2.js?v=20261114-2"></script>
   </body>
 </html>
