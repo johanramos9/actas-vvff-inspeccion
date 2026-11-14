@@ -492,12 +492,13 @@
     });
   }
 
-  function drawHeader(ctx, page, title = "ACTA DE ENTREGA / DEVOLUCIÓN DE VIVIENDA FISCAL") {
-    setFont(ctx, 12, 700);
+  function drawHeader(ctx, page, title = "ACTA DE ENTREGA Y/O DEVOLUCIÓN DE VIVIENDA FISCAL") {
+    setFont(ctx, 10.5, 700);
     ctx.fillStyle = "#26323b";
     ctx.textAlign = "left";
-    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 30);
-    ctx.fillText("COMANDO DE PERSONAL · DIVISIÓN DE BIENESTAR SOCIAL", 44, 48);
+    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 22);
+    ctx.fillText("COMANDO DE PERSONAL", 44, 38);
+    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 44, 54);
     setFont(ctx, 19, 700);
     ctx.textAlign = "center";
     ctx.fillText(title, PAGE_WIDTH / 2, 38);
