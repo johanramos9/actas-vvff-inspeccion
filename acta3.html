@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#0d2c46" />
     <meta name="referrer" content="no-referrer" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'" />
-    <meta name="description" content="Acta digital completa de entrega o devolución de vivienda fiscal." />
-    <title>Acta 3 · Entrega o devolución de vivienda fiscal</title>
-    <link rel="stylesheet" href="styles.css?v=20261114-1" />
+    <meta name="description" content="Acta digital de entrega o devolución con inspección detallada por sectores." />
+    <title>Acta 3 · Inspección por sectores</title>
+    <link rel="stylesheet" href="styles.css?v=20261114-2" />
     <link rel="stylesheet" href="acta2.css?v=20261113-3" />
     <link rel="stylesheet" href="acta3.css?v=20261113-3" />
   </head>
@@ -17,19 +17,35 @@
       <header class="topbar">
         <a class="brand" href="index.html" aria-label="Inicio Actas Vivienda Fiscal">
           <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 23.4 24 10l16 13.4v16a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3v-16Z"/><path d="M18 42V28h12v14M6 25 24 10l18 15"/><path d="M35 10v8"/></svg></span>
-          <span><strong>Actas VV.FF.</strong><small>Inspección de vivienda fiscal</small></span>
+          <span><strong>Actas VV.FF.</strong><small>Entrega y devolución de vivienda fiscal</small></span>
         </a>
-        <nav class="acta-switcher" aria-label="Seleccionar tipo de acta">
-          <a href="index.html"><span>Acta</span> 1</a>
-          <a href="acta2.html"><span>Acta</span> 2</a>
-          <a class="is-active" href="acta3.html" aria-current="page"><span>Acta</span> 3</a>
-        </nav>
-        <div class="status-pill"><span></span> Demo local</div>
+        <div class="institutional-mark" aria-label="Fuerza Aérea de Chile, Comando de Personal, División de Bienestar Social">
+          <span>Fuerza Aérea de Chile</span>
+          <strong>Comando de Personal</strong>
+          <span>División de Bienestar Social</span>
+        </div>
       </header>
+
+      <div class="acta-catalog-wrap">
+        <nav class="acta-catalog" aria-label="Seleccionar el formato de acta">
+          <a class="acta-option" href="index.html">
+            <span class="acta-number">Acta 1</span>
+            <span class="acta-option-copy"><strong>Revisión por dormitorios</strong><small>Elementos de dormitorios 1 a 5 · Bueno/Malo · causa U/D/T</small></span>
+          </a>
+          <a class="acta-option" href="acta2.html">
+            <span class="acta-number">Acta 2</span>
+            <span class="acta-option-copy"><strong>Matriz por dependencia</strong><small>Cruza elementos con todos los espacios · calificación B/R/M</small></span>
+          </a>
+          <a class="acta-option is-active" href="acta3.html" aria-current="page">
+            <span class="acta-number">Acta 3</span>
+            <span class="acta-option-copy"><strong>Inspección por sectores</strong><small>Checklist detallado de cocina, living, baños, dormitorios y más</small></span>
+          </a>
+        </nav>
+      </div>
 
       <div class="workspace">
         <aside class="sidebar" aria-label="Progreso del acta">
-          <div class="sidebar-intro"><span class="eyebrow">Acta 03</span><h1>Acta completa</h1><p>Entrega o devolución con inspección por sector de la vivienda.</p></div>
+          <div class="sidebar-intro"><span class="eyebrow">Acta 03</span><h1>Inspección por sectores</h1><p>Checklist detallado de cocina y logia, living, dormitorios, baños, bodega y varios.</p></div>
           <div class="progress-card"><div class="progress-copy"><span>Avance del acta</span><strong id="progressValue">0%</strong></div><progress class="progress-track" id="progressBar" max="100" value="0" aria-label="Avance del acta"></progress><small id="draftStatus">Borrador guardado en este dispositivo</small></div>
           <nav class="steps" aria-label="Secciones del acta">
             <button class="step is-active" type="button" data-step-target="0"><span class="step-number">1</span><span><strong>Antecedentes</strong><small>Persona y vivienda</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
