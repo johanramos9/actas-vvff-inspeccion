@@ -470,7 +470,7 @@
     stepCounter.textContent = String(safeIndex + 1);
 
     if (safeIndex === stepSections.length - 1) {
-      nextButton.innerHTML = `Descargar PDF <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>`;
+      nextButton.innerHTML = `${window.ActaSecurity.pdfActionLabel} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>`;
       renderDocumentPages();
       updateExportSummary();
     } else {
@@ -1030,7 +1030,7 @@
     window.location.reload();
   }
 
-  function downloadPdf() {
+  async function downloadPdf() {
     if (!ensureInitialDataIsValid()) return;
     saveDraft();
     renderDocumentPages();
@@ -1038,30 +1038,21 @@
     const original = button.innerHTML;
     button.disabled = true;
     button.textContent = "Generando PDF…";
-
-    window.setTimeout(() => {
-      try {
-        const canvases = [document.querySelector("#previewPage1"), document.querySelector("#previewPage2")];
-        const blob = createPdfBlob(canvases);
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        const data = collectFormData();
-        link.href = url;
-        link.download = `acta-vivienda-${safeFilename(data.nombre || data.rut)}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.setTimeout(() => URL.revokeObjectURL(url), 3000);
-        showToast("PDF descargado correctamente");
-        window.setTimeout(() => openFinishModal(true), 350);
-      } catch (error) {
-        console.error(error);
-        showToast("No fue posible generar el PDF");
-      } finally {
-        button.disabled = false;
-        button.innerHTML = original;
-      }
-    }, 60);
+    try {
+      const canvases = [document.querySelector("#previewPage1"), document.querySelector("#previewPage2")];
+      const blob = createPdfBlob(canvases);
+      const data = collectFormData();
+      const filename = `acta-vivienda-${safeFilename(data.nombre || data.rut)}.pdf`;
+      const result = await window.ActaSecurity.deliverPdf(blob, filename, "Acta 1 de vivienda fiscal");
+      saveDraft();
+      showToast(result === "shared" ? "PDF listo para guardar o compartir. Tu borrador se mantiene." : result === "opened" ? "PDF abierto. Usa Compartir para guardarlo; tu borrador se mantiene." : "PDF descargado. Tu borrador se mantiene.");
+    } catch (error) {
+      if (error?.name === "AbortError") showToast("Acción cancelada. Tu borrador se mantiene.");
+      else { console.error(error); showToast("No fue posible generar el PDF"); }
+    } finally {
+      button.disabled = false;
+      button.innerHTML = original;
+    }
   }
 
   function initialize() {
@@ -1074,6 +1065,7 @@
     renderInspectionGroups();
     setupSignaturePads();
     setupFormEvents();
+    document.querySelector("#downloadPdf").textContent = window.ActaSecurity.pdfActionLabel;
     updateProgress();
     showStep(0);
   }
