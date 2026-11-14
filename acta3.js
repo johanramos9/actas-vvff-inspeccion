@@ -614,9 +614,10 @@
   }
 
   function drawHeader(ctx, page, title) {
-    setFont(ctx, 12, 700); ctx.fillStyle = "#26323b"; ctx.textAlign = "left";
-    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 27);
-    ctx.fillText("COMANDO DE PERSONAL · DIVISIÓN DE BIENESTAR SOCIAL", 44, 45);
+    setFont(ctx, 10.5, 700); ctx.fillStyle = "#26323b"; ctx.textAlign = "left";
+    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 22);
+    ctx.fillText("COMANDO DE PERSONAL", 44, 38);
+    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 44, 54);
     setFont(ctx, 18, 700); ctx.textAlign = "center"; ctx.fillText(title, PAGE_WIDTH / 2, 36);
     setFont(ctx, 10, 700); ctx.textAlign = "right"; ctx.fillText(`PÁGINA ${page} DE 6`, PAGE_WIDTH - 44, 36);
     ctx.strokeStyle = "#172e42"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(44, 62); ctx.lineTo(PAGE_WIDTH - 44, 62); ctx.stroke();
