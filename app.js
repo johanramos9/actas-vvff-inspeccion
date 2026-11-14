@@ -680,6 +680,12 @@
   }
 
   function drawPageHeader(ctx, pageNumber) {
+    setFont(ctx, 10, 700);
+    ctx.fillStyle = "#26323b";
+    ctx.textAlign = "left";
+    ctx.fillText("FUERZA AÉREA DE CHILE", 58, 26);
+    ctx.fillText("COMANDO DE PERSONAL", 58, 41);
+    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 58, 56);
     setFont(ctx, 21, 700);
     ctx.fillStyle = "#1d2831";
     ctx.textAlign = "center";
@@ -691,7 +697,7 @@
     setFont(ctx, 88, 700);
     ctx.fillStyle = "rgba(15, 48, 70, 0.035)";
     ctx.textAlign = "center";
-    ctx.fillText("DEMO LOCAL", 0, 0);
+    ctx.fillText("ACTA DIGITAL", 0, 0);
     ctx.restore();
     setFont(ctx, 10, 400);
     ctx.fillStyle = "#727b82";
