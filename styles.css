@@ -70,6 +70,18 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .brand strong { font-size: 1rem; letter-spacing: 0.01em; }
 .brand small { margin-top: 2px; color: #aebfca; font-size: 0.73rem; }
 
+.institutional-mark {
+  color: #dce7ed;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  line-height: 1.05;
+}
+.institutional-mark span { color: #aebfca; font-size: 0.58rem; font-weight: 700; }
+.institutional-mark strong { color: var(--white); font-size: 0.68rem; }
+
 .status-pill { display: flex; align-items: center; gap: 8px; border: 1px solid rgb(255 255 255 / 0.18); padding: 8px 12px; border-radius: 999px; color: #dce7ed; font-size: 0.76rem; font-weight: 700; }
 .status-pill span { width: 7px; height: 7px; background: #70d9a5; border-radius: 50%; box-shadow: 0 0 0 4px rgb(112 217 165 / 0.12); }
 
@@ -78,6 +90,55 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .acta-switcher a:hover { color: var(--white); background: rgb(255 255 255 / 0.08); }
 .acta-switcher .is-active { color: var(--navy-950); background: #7edbd5; box-shadow: 0 3px 10px rgb(0 0 0 / 0.18); }
 .acta-switcher .is-pending { opacity: 0.48; cursor: not-allowed; }
+
+.acta-catalog-wrap {
+  background: var(--navy-900);
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow: 0 7px 24px rgb(7 27 45 / 0.14);
+}
+.acta-catalog {
+  width: min(1600px, 100%);
+  margin: 0 auto;
+  padding: 11px clamp(18px, 4vw, 54px) 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.acta-option {
+  min-width: 0;
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.055);
+  color: #dce7ed;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  transition: 0.18s ease;
+}
+.acta-option:hover { border-color: rgb(126 219 213 / 0.65); background: rgb(255 255 255 / 0.1); transform: translateY(-1px); }
+.acta-option.is-active { border-color: #7edbd5; background: var(--teal-100); color: var(--navy-950); box-shadow: 0 5px 18px rgb(0 0 0 / 0.18); }
+.acta-number {
+  flex: 0 0 auto;
+  min-width: 54px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.1);
+  color: #92ddd8;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.acta-option.is-active .acta-number { background: var(--navy-900); color: var(--white); }
+.acta-option-copy { min-width: 0; }
+.acta-option-copy strong, .acta-option-copy small { display: block; }
+.acta-option-copy strong { font-size: 0.79rem; line-height: 1.2; }
+.acta-option-copy small { margin-top: 4px; color: #aebfca; font-size: 0.62rem; line-height: 1.3; }
+.acta-option.is-active .acta-option-copy small { color: var(--slate-600); }
 
 .workspace { min-height: calc(100vh - 76px); display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); max-width: 1600px; margin: 0 auto; background: var(--slate-50); box-shadow: 0 0 90px rgb(7 27 45 / 0.12); }
 
@@ -337,6 +398,8 @@ body.modal-open { overflow: hidden; }
 
 @media (max-width: 1120px) {
   :root { --sidebar-width: 250px; }
+  .acta-option-copy small { display: none; }
+  .acta-option { min-height: 52px; }
   .main-content { padding-left: 35px; padding-right: 35px; }
   .choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .inspection-item { grid-template-columns: minmax(160px, 0.8fr) minmax(350px, 1.7fr); }
@@ -348,9 +411,11 @@ body.modal-open { overflow: hidden; }
   .topbar { height: 68px; padding: 0 17px; }
   .brand-mark { width: 38px; height: 38px; }
   .brand small { display: none; }
-  .status-pill { padding: 7px 9px; font-size: 0.65rem; }
-  .acta-switcher a, .acta-switcher > span { padding: 0 9px; }
-  .acta-switcher a span, .acta-switcher > span > span { display: none; }
+  .institutional-mark span { font-size: 0.5rem; }
+  .institutional-mark strong { font-size: 0.59rem; }
+  .acta-catalog { display: flex; overflow-x: auto; padding: 9px 13px 10px; scrollbar-width: none; }
+  .acta-catalog::-webkit-scrollbar { display: none; }
+  .acta-option { flex: 0 0 244px; }
   .workspace { min-height: calc(100vh - 68px); display: block; }
   .sidebar { position: sticky; top: 68px; z-index: 35; width: 100%; height: auto; padding: 0; overflow: visible; border-right: 0; border-bottom: 1px solid var(--slate-200); }
   .sidebar-intro, .progress-card, .privacy-note { display: none; }
@@ -377,9 +442,13 @@ body.modal-open { overflow: hidden; }
 }
 
 @media (max-width: 560px) {
-  .status-pill { display: none; }
-  .topbar { justify-content: flex-start; }
-  .acta-switcher { position: static; transform: none; margin-left: auto; }
+  .topbar { justify-content: space-between; }
+  .brand { gap: 8px; }
+  .brand strong { font-size: 0.88rem; }
+  .institutional-mark { max-width: 124px; }
+  .institutional-mark span { font-size: 0.44rem; }
+  .institutional-mark strong { font-size: 0.52rem; }
+  .acta-option { flex-basis: 225px; }
 }
 
 @media (max-width: 520px) {
@@ -401,7 +470,7 @@ body.modal-open { overflow: hidden; }
 }
 
 @media print {
-  .topbar, .sidebar, .form-actions, .section-heading, .export-card, .preview-toolbar { display: none !important; }
+  .topbar, .acta-catalog-wrap, .sidebar, .form-actions, .section-heading, .export-card, .preview-toolbar { display: none !important; }
   .workspace, .main-content, #actaForm, .form-step { display: block !important; padding: 0; background: white; }
   .form-step:not([data-step="4"]) { display: none !important; }
   .document-preview { padding: 0; border: 0; background: white; }
