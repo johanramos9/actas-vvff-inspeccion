@@ -362,6 +362,22 @@
       canvas.addEventListener("pointerup", () => endStroke(pad));
       canvas.addEventListener("pointercancel", () => endStroke(pad));
       canvas.addEventListener("pointerleave", () => { if (pad.activeStroke) endStroke(pad); });
+
+      const signatureTitle = canvas.getAttribute("aria-label")?.replace(/^Área de firma:\s*/, "") || "Firma";
+      window.ActaSecurity.installFullscreenSignature(pad, {
+        title: signatureTitle,
+        onResize: () => resizeSignaturePad(pad),
+        onClear: () => {
+          pad.strokes = [];
+          redrawSignaturePad(pad);
+          scheduleSave();
+          updateProgress();
+        },
+        onClose: () => {
+          scheduleSave();
+          updateProgress();
+        },
+      });
     });
     document.querySelectorAll("[data-clear-signature]").forEach((button) => button.addEventListener("click", () => {
       const pad = state.signaturePads[button.dataset.clearSignature];
