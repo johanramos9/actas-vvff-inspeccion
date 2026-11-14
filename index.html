@@ -8,10 +8,10 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'" />
     <meta
       name="description"
-      content="Prototipo local para completar, firmar y exportar actas de vivienda fiscal."
+      content="Acta digital de entrega o devolución con revisión detallada de dormitorios."
     />
-    <title>Actas VV.FF. · Inspección de vivienda</title>
-    <link rel="stylesheet" href="styles.css?v=20261114-1" />
+    <title>Acta 1 · Revisión por dormitorios</title>
+    <link rel="stylesheet" href="styles.css?v=20261114-2" />
   </head>
   <body>
     <div class="app-shell">
@@ -26,23 +26,39 @@
           </span>
           <span>
             <strong>Actas VV.FF.</strong>
-            <small>Inspección de vivienda fiscal</small>
+            <small>Entrega y devolución de vivienda fiscal</small>
           </span>
         </a>
-        <nav class="acta-switcher" aria-label="Seleccionar tipo de acta">
-          <a class="is-active" href="index.html" aria-current="page"><span>Acta</span> 1</a>
-          <a href="acta2.html"><span>Acta</span> 2</a>
-          <a href="acta3.html"><span>Acta</span> 3</a>
-        </nav>
-        <div class="status-pill"><span></span> Demo local</div>
+        <div class="institutional-mark" aria-label="Fuerza Aérea de Chile, Comando de Personal, División de Bienestar Social">
+          <span>Fuerza Aérea de Chile</span>
+          <strong>Comando de Personal</strong>
+          <span>División de Bienestar Social</span>
+        </div>
       </header>
+
+      <div class="acta-catalog-wrap">
+        <nav class="acta-catalog" aria-label="Seleccionar el formato de acta">
+          <a class="acta-option is-active" href="index.html" aria-current="page">
+            <span class="acta-number">Acta 1</span>
+            <span class="acta-option-copy"><strong>Revisión por dormitorios</strong><small>Elementos de dormitorios 1 a 5 · Bueno/Malo · causa U/D/T</small></span>
+          </a>
+          <a class="acta-option" href="acta2.html">
+            <span class="acta-number">Acta 2</span>
+            <span class="acta-option-copy"><strong>Matriz por dependencia</strong><small>Cruza elementos con todos los espacios · calificación B/R/M</small></span>
+          </a>
+          <a class="acta-option" href="acta3.html">
+            <span class="acta-number">Acta 3</span>
+            <span class="acta-option-copy"><strong>Inspección por sectores</strong><small>Checklist detallado de cocina, living, baños, dormitorios y más</small></span>
+          </a>
+        </nav>
+      </div>
 
       <div class="workspace">
         <aside class="sidebar" aria-label="Progreso del acta">
           <div class="sidebar-intro">
             <span class="eyebrow">Acta 01</span>
-            <h1>Entrega o devolución</h1>
-            <p>Completa la inspección y obtén el documento listo para respaldo.</p>
+            <h1>Revisión por dormitorios</h1>
+            <p>Revisa cada elemento en los dormitorios 1 a 5 y marca Bueno o Malo con su causa U/D/T.</p>
           </div>
 
           <div class="progress-card">
