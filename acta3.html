@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d2c46" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'" />
+    <meta name="description" content="Acta digital completa de entrega o devolución de vivienda fiscal." />
+    <title>Acta 3 · Entrega o devolución de vivienda fiscal</title>
+    <link rel="stylesheet" href="styles.css?v=20261114-1" />
+    <link rel="stylesheet" href="acta2.css?v=20261113-3" />
+    <link rel="stylesheet" href="acta3.css?v=20261113-3" />
+  </head>
+  <body>
+    <div class="app-shell acta3-app">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Inicio Actas Vivienda Fiscal">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 23.4 24 10l16 13.4v16a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3v-16Z"/><path d="M18 42V28h12v14M6 25 24 10l18 15"/><path d="M35 10v8"/></svg></span>
+          <span><strong>Actas VV.FF.</strong><small>Inspección de vivienda fiscal</small></span>
+        </a>
+        <nav class="acta-switcher" aria-label="Seleccionar tipo de acta">
+          <a href="index.html"><span>Acta</span> 1</a>
+          <a href="acta2.html"><span>Acta</span> 2</a>
+          <a class="is-active" href="acta3.html" aria-current="page"><span>Acta</span> 3</a>
+        </nav>
+        <div class="status-pill"><span></span> Demo local</div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" aria-label="Progreso del acta">
+          <div class="sidebar-intro"><span class="eyebrow">Acta 03</span><h1>Acta completa</h1><p>Entrega o devolución con inspección por sector de la vivienda.</p></div>
+          <div class="progress-card"><div class="progress-copy"><span>Avance del acta</span><strong id="progressValue">0%</strong></div><progress class="progress-track" id="progressBar" max="100" value="0" aria-label="Avance del acta"></progress><small id="draftStatus">Borrador guardado en este dispositivo</small></div>
+          <nav class="steps" aria-label="Secciones del acta">
+            <button class="step is-active" type="button" data-step-target="0"><span class="step-number">1</span><span><strong>Antecedentes</strong><small>Persona y vivienda</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
+            <button class="step" type="button" data-step-target="1"><span class="step-number">2</span><span><strong>Inspección</strong><small>Marcar Bueno o Malo</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
+            <button class="step" type="button" data-step-target="2"><span class="step-number">3</span><span><strong>Cierre</strong><small>Consumos y resultado</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
+            <button class="step" type="button" data-step-target="3"><span class="step-number">4</span><span><strong>Firmas</strong><small>Firmas y finanzas</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
+            <button class="step" type="button" data-step-target="4"><span class="step-number">5</span><span><strong>Documento</strong><small>Revisar y descargar</small></span><svg viewBox="0 0 20 20"><path d="m7 4 6 6-6 6"/></svg></button>
+          </nav>
+          <div class="privacy-note"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5z"/></svg><span><strong>Datos locales</strong>No se envían al servidor y el borrador vence tras 12 horas.</span></div>
+        </aside>
+
+        <main class="main-content">
+          <form id="acta3Form" autocomplete="off">
+            <section class="form-step is-active" data-step="0" aria-labelledby="a3Step0Title">
+              <div class="section-heading"><div><span class="eyebrow">Paso 1 de 5</span><h2 id="a3Step0Title">Antecedentes del acta</h2><p>Completa el encabezado del formulario en papel.</p></div><span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 21v-9l8-7 8 7v9M9 21v-6h6v6M3 12l9-10 9 10"/></svg></span></div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Funcionario</span><h3>Identificación</h3></div>
+                <div class="field-grid cols-3">
+                  <label class="field"><span>Grado</span><input name="grado" type="text" placeholder="Ej. Sargento 1°" maxlength="40" /></label>
+                  <label class="field"><span>N° empleado</span><input name="empleado" type="text" inputmode="numeric" maxlength="10" /><small class="field-help">Solo números, máximo 10 dígitos.</small></label>
+                  <label class="field"><span>RUT</span><input name="rut" type="text" placeholder="12.345.678-5" maxlength="12" /><small class="field-help">Se revisará el dígito verificador.</small></label>
+                  <label class="field span-2"><span>Nombre completo</span><input name="nombre" type="text" placeholder="Nombres y apellidos" maxlength="80" /></label>
+                  <label class="field"><span>Unidad</span><input name="unidad" type="text" maxlength="60" /></label>
+                  <label class="field"><span>RUT cónyuge FACH</span><input name="rutConyuge" type="text" placeholder="Opcional" maxlength="12" /><small class="field-help">Si se completa, también se validará.</small></label>
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Motivo del acta</span><h3>Entrega o devolución</h3></div>
+                <div class="choice-grid compact-choices operation-choices">
+                  <label class="choice-card"><input type="radio" name="motivo" value="Entrega 1ª vez"/><span class="choice-check"></span><strong>Entrega 1ª vez</strong><small>Primera asignación</small></label>
+                  <label class="choice-card"><input type="radio" name="motivo" value="Entrega cambio"/><span class="choice-check"></span><strong>Entrega cambio</strong><small>Cambio de vivienda</small></label>
+                  <label class="choice-card"><input type="radio" name="motivo" value="Devolución definitiva"/><span class="choice-check"></span><strong>Devolución definitiva</strong><small>Término de asignación</small></label>
+                  <label class="choice-card"><input type="radio" name="motivo" value="Devolución cambio"/><span class="choice-check"></span><strong>Devolución cambio</strong><small>Cambio de vivienda</small></label>
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Vivienda fiscal</span><h3>Ubicación</h3></div>
+                <div class="field-grid cols-3">
+                  <label class="field"><span>Villa FACH</span><input name="villa" type="text" maxlength="80" /></label>
+                  <label class="field span-2"><span>Dirección</span><input name="direccion" type="text" maxlength="120" /></label>
+                  <label class="field"><span>Fecha</span><input name="fecha" type="date" /></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="1" hidden aria-labelledby="a3Step1Title">
+              <div class="section-heading"><div><span class="eyebrow">Paso 2 de 5</span><h2 id="a3Step1Title">Inspección de la vivienda</h2><p>Selecciona el lugar y toca B o M, tal como marcarías la casilla del papel.</p></div><span class="section-icon"><svg viewBox="0 0 24 24"><path d="M9 11 12 14 22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span></div>
+              <div class="paper-legend acta3-legend"><span><b class="good">B</b><strong>Bueno</strong></span><span><b class="bad">M</b><strong>Malo</strong></span><small>Si marcas M, aparecerán la causa y la observación. U: usuario · D: diseño · T: tiempo.</small></div>
+              <div class="zone-filter" id="zoneTabs" role="tablist" aria-label="Sectores de la vivienda"></div>
+              <div class="room-selector-wrap">
+                <div class="room-selector-heading"><div><span class="card-kicker">Dependencia</span><h3 id="currentLocationTitle">Cocina</h3></div><button type="button" class="button secondary mini-button" id="markAllGood">Completar pendientes con B</button></div>
+                <div class="location-tabs" id="locationTabs" role="tablist" aria-label="Dependencias del sector"></div>
+              </div>
+              <div id="inspectionGroups" class="matrix-groups"></div>
+            </section>
+
+            <section class="form-step" data-step="2" hidden aria-labelledby="a3Step2Title">
+              <div class="section-heading"><div><span class="eyebrow">Paso 3 de 5</span><h2 id="a3Step2Title">Cierre de la inspección</h2><p>Registra lecturas, certificados y la condición final de la vivienda.</p></div><span class="section-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span></div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Consumos básicos</span><h3>Lecturas y certificados</h3></div>
+                <div class="consumption-table" id="consumptionRows"></div>
+              </div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Resultado</span><h3>Condición final de la vivienda</h3></div>
+                <div class="choice-grid final-condition-grid">
+                  <label class="choice-card"><input type="radio" name="condicionFinal" value="Aceptada"/><span class="choice-check"></span><strong>Aceptada</strong></label>
+                  <label class="choice-card"><input type="radio" name="condicionFinal" value="Aceptada con observaciones"/><span class="choice-check"></span><strong>Aceptada con observaciones</strong></label>
+                  <label class="choice-card"><input type="radio" name="condicionFinal" value="Rechazada"/><span class="choice-check"></span><strong>Rechazada</strong></label>
+                </div>
+                <label class="field final-observations"><span>Observaciones generales</span><textarea name="observacionesFinales" rows="5" maxlength="1400" placeholder="Acuerdos, trabajos pendientes u observaciones del cierre..."></textarea></label>
+                <p class="legal-note">El usuario que devuelve la vivienda declara no mantener deudas pendientes que perjudiquen al nuevo usuario y garantiza, por un período de un mes, que los trabajos de pintura y elementos de grifería no presentarán observaciones.</p>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="3" hidden aria-labelledby="a3Step3Title">
+              <div class="section-heading"><div><span class="eyebrow">Paso 4 de 5</span><h2 id="a3Step3Title">Firmas y gestión financiera</h2><p>Firma directamente con el dedo o lápiz de la tablet. Los campos pueden quedar pendientes.</p></div><span class="section-icon"><svg viewBox="0 0 24 24"><path d="M7 3h10v4H7zM5 5H3v16h18V5h-2M7 12h10M7 16h7"/></svg></span></div>
+              <div class="signature-grid signature-grid-five" id="signatureGrid"></div>
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Uso Subdepto. Gestión Financiera</span><h3>Descuentos</h3></div>
+                <div class="field-grid cols-3">
+                  <label class="field"><span>DRAA 5,5% · cese descuento</span><input name="draaCese" type="date" /></label>
+                  <label class="field"><span>DRAA 5,5% · inicio descuento</span><input name="draaInicio" type="date" /></label>
+                  <label class="field"><span>Gasto común · cese descuento</span><input name="gastoCese" type="date" /></label>
+                  <label class="field"><span>Gasto común · inicio descuento</span><input name="gastoInicio" type="date" /></label>
+                  <label class="field"><span>Fecha</span><input name="fechaGestion" type="date" /></label>
+                  <label class="field"><span>Nombre responsable</span><input name="responsableFinanzas" type="text" maxlength="80" /></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="4" hidden aria-labelledby="a3Step4Title">
+              <div class="section-heading document-heading"><div><span class="eyebrow">Paso 5 de 5</span><h2 id="a3Step4Title">Documento listo para revisar</h2><p>El PDF se crea en este dispositivo y mantiene el orden del acta original.</p></div><button type="button" class="button secondary" id="refreshPreview">Actualizar vista</button></div>
+              <div class="export-card"><div class="export-icon"><svg viewBox="0 0 24 24"><path d="M7 2h7l5 5v15H7zM14 2v5h5M12 11v7M9 15l3 3 3-3"/></svg></div><div><span class="card-kicker">Exportación local</span><h3>Acta 3 · Inspección completa</h3><p>6 páginas A4 apaisadas, listas para guardar o imprimir.</p></div><div class="export-actions"><button type="button" class="button primary download-button" id="downloadPdf">Descargar PDF</button><button type="button" class="button secondary" id="startNewActa">Nueva acta</button></div></div>
+              <div class="resume-note"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7"/></svg><span><strong>El borrador queda guardado.</strong> Cambiar entre las tres actas no borra lo que hayas escrito.</span></div>
+              <div class="preview-toolbar"><div><strong>Vista previa</strong><span>6 páginas · A4 apaisado</span></div><div class="preview-tabs" id="previewTabs" role="tablist"></div></div>
+              <div class="document-preview"><div class="paper wide-paper"><canvas id="previewCanvas"></canvas></div></div>
+            </section>
+          </form>
+
+          <footer class="form-actions"><button type="button" class="button ghost" id="previousStep" disabled><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Anterior</button><div class="step-counter"><span id="stepCounter">1</span> de 5</div><button type="button" class="button primary" id="nextStep">Continuar<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></footer>
+        </main>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg><span>Guardado</span></div>
+    <div class="modal-backdrop" id="finishModal" hidden><section class="finish-modal" role="dialog" aria-modal="true"><div class="finish-modal-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></div><span class="card-kicker" id="finishKicker">Descarga completada</span><h2 id="finishTitle">PDF descargado correctamente</h2><p id="finishDescription">Puedes mantener este borrador o comenzar una nueva Acta 3.</p><div class="finish-options"><button type="button" class="finish-option keep" id="keepDraft"><span class="finish-option-icon"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7"/></svg></span><span><strong>Mantener borrador</strong><small>Podrás retomarla después</small></span></button><button type="button" class="finish-option new" id="confirmNewActa"><span class="finish-option-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Iniciar nueva acta</strong><small>Limpiará campos y firmas</small></span></button></div><button type="button" class="modal-cancel" id="cancelModal">Cancelar</button></section></div>
+    <script src="security.js?v=20261114-1"></script>
+    <script src="validation.js?v=20261114-1"></script>
+    <script src="acta3.js?v=20261114-1"></script>
+  </body>
+</html>
