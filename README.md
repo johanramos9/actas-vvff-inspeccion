@@ -1,12 +1,12 @@
-# Actas VV.FF. — Demo local
+# Actas VV.FF. — Aplicación digital
 
 Aplicación independiente para completar, firmar y descargar actas de vivienda fiscal.
 
 ## Formularios disponibles
 
-- **Acta 1:** entrega y/o devolución con inspección de dormitorios y condición final.
-- **Acta 2:** formato matriz con revisión B/R/M por dependencia, novedades, exterior, consumos, documentos y firmas.
-- **Acta 3:** acta completa por sectores (cocina/logia, living/pasillo/terraza, dormitorios, baños, bodega y varios), consumos, condición final, firmas y gestión financiera.
+- **Acta 1 — Revisión por dormitorios:** evalúa elementos en los dormitorios 1 a 5 con condición Bueno/Malo y causa U/D/T.
+- **Acta 2 — Matriz por dependencia:** cruza cada elemento con hall, terraza, living, dormitorios, baños, cocina y otros espacios; utiliza calificación B/R/M.
+- **Acta 3 — Inspección por sectores:** checklist detallado por cocina/logia, living/pasillo/terraza, dormitorios, baños, bodega y varios, con condición y causa U/D/T.
 
 ## Abrir la demo
 
