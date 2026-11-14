@@ -2,10 +2,11 @@
   "use strict";
 
   const STORAGE_KEY = "actas-vvff-acta3-v1";
-  const PAGE_WIDTH = 1754;
-  const PAGE_HEIGHT = 1240;
-  const PDF_WIDTH = 841.89;
-  const PDF_HEIGHT = 595.28;
+  // Oficio chileno (8,5 x 13 pulgadas), igual al formulario impreso.
+  const PAGE_WIDTH = 1275;
+  const PAGE_HEIGHT = 1950;
+  const PDF_WIDTH = 612;
+  const PDF_HEIGHT = 936;
 
   const zones = [
     {
@@ -124,7 +125,7 @@
       ],
     },
     {
-      id: "banos", name: "Baños", locations: [["bano1", "Baño 1", "1"], ["bano2", "Baño 2", "2"], ["bano3", "Baño 3", "3"], ["bano4", "Baño 4", "4"], ["bano5", "Baño 5", "5"]],
+      id: "banos", name: "Baño(s)", locations: [["bano1", "Baño 1", "1"], ["bano2", "Baño 2", "2"], ["bano3", "Baño 3", "3"], ["bano4", "Baño 4", "4"], ["bano5", "Baño 5", "5"]],
       groups: [
         { id: "lavamanos", name: "Conjunto lavamanos", items: [
           ["vanitorio-puertas", "Vanitorio · Puertas, manillas y bisagras", "Sin óxido y aseo general."], ["vanitorio-tapacanto", "Vanitorio · Tapacanto", "Sin cortes y pegado."],
@@ -595,11 +596,11 @@
   }
 
   function drawCell(ctx, x, y, width, height, text = "", options = {}) {
-    const { fill = "#fff", stroke = "#56616a", size = 10, weight = 400, align = "left", padding = 5, color = "#182431", maxLines = 3 } = options;
+    const { fill = "#fff", stroke = "#111", size = 10, weight = 400, align = "left", padding = 5, color = "#111", maxLines = 3, lineWidth = 1.2 } = options;
     ctx.fillStyle = fill;
     ctx.fillRect(x, y, width, height);
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = lineWidth;
     ctx.strokeRect(x, y, width, height);
     setFont(ctx, size, weight);
     ctx.fillStyle = color;
@@ -614,13 +615,12 @@
   }
 
   function drawHeader(ctx, page, title) {
-    setFont(ctx, 10.5, 700); ctx.fillStyle = "#26323b"; ctx.textAlign = "left";
-    ctx.fillText("FUERZA AÉREA DE CHILE", 44, 22);
-    ctx.fillText("COMANDO DE PERSONAL", 44, 38);
-    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 44, 54);
-    setFont(ctx, 18, 700); ctx.textAlign = "center"; ctx.fillText(title, PAGE_WIDTH / 2, 36);
-    setFont(ctx, 10, 700); ctx.textAlign = "right"; ctx.fillText(`PÁGINA ${page} DE 6`, PAGE_WIDTH - 44, 36);
-    ctx.strokeStyle = "#172e42"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(44, 62); ctx.lineTo(PAGE_WIDTH - 44, 62); ctx.stroke();
+    if (page !== 1) return;
+    setFont(ctx, 15, 400); ctx.fillStyle = "#111"; ctx.textAlign = "left";
+    ctx.fillText("FUERZA AÉREA DE CHILE", 80, 70);
+    ctx.fillText("COMANDO DE PERSONAL", 80, 96);
+    ctx.fillText("DIVISIÓN DE BIENESTAR SOCIAL", 80, 122);
+    setFont(ctx, 24, 700); ctx.textAlign = "center"; ctx.fillText("ACTA ENTREGA Y/O DEVOLUCIÓN VV.FF.", PAGE_WIDTH / 2, 178);
   }
 
   function formatDate(value) {
@@ -630,19 +630,30 @@
   }
 
   function drawIdentity(ctx, data, y = 74) {
-    const x = 44;
-    const width = PAGE_WIDTH - 88;
-    drawCell(ctx, x, y, width * 0.28, 26, `GRADO: ${data.grado || ""}`, { size: 9, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x + width * 0.28, y, width * 0.24, 26, `N° EMPL.: ${data.empleado || ""}`, { size: 9, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x + width * 0.52, y, width * 0.25, 26, `RUT: ${data.rut || ""}`, { size: 9, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x + width * 0.77, y, width * 0.23, 26, `FECHA: ${formatDate(data.fecha)}`, { size: 9, weight: 700, fill: "#f3f5f6" });
-    drawCell(ctx, x, y + 26, width * 0.52, 26, `NOMBRE: ${data.nombre || ""}`, { size: 9 });
-    drawCell(ctx, x + width * 0.52, y + 26, width * 0.25, 26, `UNIDAD: ${data.unidad || ""}`, { size: 9 });
-    drawCell(ctx, x + width * 0.77, y + 26, width * 0.23, 26, `RUT CÓNYUGE: ${data.rutConyuge || ""}`, { size: 8 });
-    drawCell(ctx, x, y + 52, width * 0.31, 26, `VILLA FACH: ${data.villa || ""}`, { size: 9 });
-    drawCell(ctx, x + width * 0.31, y + 52, width * 0.45, 26, `DIRECCIÓN: ${data.direccion || ""}`, { size: 9 });
-    drawCell(ctx, x + width * 0.76, y + 52, width * 0.24, 26, `MOTIVO: ${data.motivo || ""}`, { size: 8.2 });
-    return y + 78;
+    const x = 54;
+    const width = PAGE_WIDTH - 108;
+    const boxY = 220;
+    drawCell(ctx, x, boxY, width, 170, "", { lineWidth: 2.2 });
+    setFont(ctx, 14, 700); ctx.fillStyle = "#111"; ctx.textAlign = "left";
+    ctx.fillText(`GRADO: ${data.grado || ""}`, x + 10, boxY + 25);
+    ctx.fillText(`N° EMPL.: ${data.empleado || ""}`, x + 350, boxY + 25);
+    ctx.fillText(`RUT: ${data.rut || ""}`, x + 700, boxY + 25);
+    ctx.fillText(`NOMBRE: ${data.nombre || ""}`, x + 10, boxY + 58);
+    ctx.fillText(`UNIDAD: ${data.unidad || ""}`, x + 10, boxY + 91);
+    ctx.fillText(`RUT CÓNYUGE FACH: ${data.rutConyuge || ""}`, x + 700, boxY + 91);
+    ctx.fillText(`VILLA FACH: ${data.villa || ""}`, x + 10, boxY + 124);
+    ctx.fillText(`DIRECCIÓN: ${data.direccion || ""}`, x + 10, boxY + 157);
+    ctx.fillText(`FECHA: ${formatDate(data.fecha)}`, x + 780, boxY + 157);
+    const motiveY = 410;
+    drawCell(ctx, x, motiveY, width, 92, "", { lineWidth: 2.2 });
+    setFont(ctx, 16, 700); ctx.textAlign = "center"; ctx.fillText("MOTIVO ACTA", PAGE_WIDTH / 2, motiveY + 22);
+    const mark = (value) => data.motivo === value ? "X" : "";
+    setFont(ctx, 12, 700); ctx.textAlign = "left";
+    ctx.fillText(`ENTREGA 1° VEZ      [${mark("Entrega 1ª vez")}]`, x + 12, motiveY + 53);
+    ctx.fillText(`ENTREGA CAMBIO      [${mark("Entrega cambio")}]`, x + 12, motiveY + 78);
+    ctx.fillText(`DEVOLUCIÓN DEFINITIVA      [${mark("Devolución definitiva")}]`, x + 610, motiveY + 53);
+    ctx.fillText(`DEVOLUCIÓN CAMBIO          [${mark("Devolución cambio")}]`, x + 610, motiveY + 78);
+    return motiveY + 92;
   }
 
   function observationSummary(zone, itemId) {
@@ -657,43 +668,54 @@
   }
 
   function drawZoneTable(ctx, zone, y, options = {}) {
-    const x = options.x || 44;
-    const fullWidth = options.width || PAGE_WIDTH - 88;
+    const x = options.x || 54;
+    const fullWidth = options.width || PAGE_WIDTH - 108;
     const totalRows = allItems(zone).length;
-    const rowHeight = options.rowHeight || Math.min(23, Math.max(14.5, (options.maxHeight || 920) / totalRows));
-    const groupWidth = 132;
+    const titleHeight = 34;
+    const headerHeight = 92;
+    const rowHeight = options.rowHeight || Math.min(options.maxRowHeight || 40, Math.max(17, ((options.maxHeight || 1200) - titleHeight - headerHeight) / totalRows));
+    const groupWidth = 145;
     const itemWidth = 205;
-    const reviewWidth = 350;
-    const locationWidth = Math.min(70, 260 / zone.locations.length);
-    const causeWidth = 105;
-    const usedWidth = groupWidth + itemWidth + reviewWidth + locationWidth * zone.locations.length + causeWidth;
+    const reviewWidth = 300;
+    const markWidth = 26;
+    const conditionWidth = markWidth * zone.locations.length * 2;
+    const causeWidth = 65;
+    const usedWidth = groupWidth + itemWidth + reviewWidth + conditionWidth + causeWidth;
     const observationWidth = fullWidth - usedWidth;
-    const headerHeight = 43;
-    drawCell(ctx, x, y, groupWidth, headerHeight, "ÍTEM", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 9 });
-    drawCell(ctx, x + groupWidth, y, itemWidth, headerHeight, "ELEMENTO", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 9 });
-    drawCell(ctx, x + groupWidth + itemWidth, y, reviewWidth, headerHeight, "REVISIÓN", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 9 });
-    let cursorX = x + groupWidth + itemWidth + reviewWidth;
-    zone.locations.forEach(([, name]) => { drawCell(ctx, cursorX, y, locationWidth, headerHeight, name.toUpperCase(), { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 7, padding: 2 }); cursorX += locationWidth; });
-    drawCell(ctx, cursorX, y, causeWidth, headerHeight, "CAUSA U/D/T", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, cursorX + causeWidth, y, observationWidth, headerHeight, "OBSERVACIONES", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 8 });
+    const itemX = x + groupWidth;
+    const reviewX = itemX + itemWidth;
+    const conditionX = reviewX + reviewWidth;
+    const causeX = conditionX + conditionWidth;
+    const observationX = causeX + causeWidth;
+    drawCell(ctx, x, y, fullWidth, titleHeight, zone.name.toUpperCase(), { fill: "#30363b", color: "#fff", align: "center", weight: 700, size: 15, lineWidth: 1.8 });
+    y += titleHeight;
+    drawCell(ctx, x, y, groupWidth + itemWidth, headerHeight, "ÍTEM", { align: "center", weight: 700, size: 13 });
+    drawCell(ctx, reviewX, y, reviewWidth, headerHeight, "REVISIÓN", { align: "center", weight: 700, size: 13 });
+    drawCell(ctx, conditionX, y, conditionWidth, 32, "CONDICIÓN", { align: "center", weight: 700, size: 12 });
+    drawCell(ctx, causeX, y, causeWidth, headerHeight, "OBS.", { align: "center", weight: 700, size: 11 });
+    drawCell(ctx, observationX, y, observationWidth, headerHeight, "(U: atribuible a usuario)\n(D: atribuible a diseño)\n(T: atribuible a tiempo)", { align: "left", weight: 400, size: 10, padding: 8, maxLines: 3 });
+    const conditionHalf = conditionWidth / 2;
+    drawCell(ctx, conditionX, y + 32, conditionHalf, 30, "BUENO", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, conditionX + conditionHalf, y + 32, conditionHalf, 30, "MALO", { align: "center", weight: 700, size: 10 });
+    zone.locations.forEach(([, , short], index) => {
+      drawCell(ctx, conditionX + index * markWidth, y + 62, markWidth, 30, short, { align: "center", weight: 700, size: 10, padding: 1 });
+      drawCell(ctx, conditionX + conditionHalf + index * markWidth, y + 62, markWidth, 30, short, { align: "center", weight: 700, size: 10, padding: 1 });
+    });
     y += headerHeight;
     const small = rowHeight < 18;
     zone.groups.forEach((group) => {
-      drawCell(ctx, x, y, groupWidth, group.items.length * rowHeight, group.name.toUpperCase(), { fill: "#edf1f3", align: "center", weight: 700, size: small ? 6.5 : 7.5, padding: 3, maxLines: 6 });
+      drawCell(ctx, x, y, groupWidth, group.items.length * rowHeight, group.name, { align: "center", weight: 400, size: small ? 9 : 11, padding: 4, maxLines: 7 });
       group.items.forEach(([itemId, itemName, review]) => {
-        drawCell(ctx, x + groupWidth, y, itemWidth, rowHeight, itemName, { size: small ? 6.2 : 7.4, padding: 3, maxLines: 2 });
-        drawCell(ctx, x + groupWidth + itemWidth, y, reviewWidth, rowHeight, review, { size: small ? 6.1 : 7.1, padding: 3, maxLines: 2 });
-        let cellX = x + groupWidth + itemWidth + reviewWidth;
-        zone.locations.forEach(([locationId]) => {
+        drawCell(ctx, itemX, y, itemWidth, rowHeight, itemName, { size: small ? 8 : 10, padding: 4, maxLines: 2 });
+        drawCell(ctx, reviewX, y, reviewWidth, rowHeight, review, { size: small ? 7.8 : 9.5, padding: 4, maxLines: 2 });
+        zone.locations.forEach(([locationId], index) => {
           const condition = state.inspection[locationId][itemId].condition;
-          const fill = condition === "B" ? "#e6f5ec" : condition === "M" ? "#fdeaea" : "#fff";
-          const color = condition === "B" ? "#25865a" : condition === "M" ? "#ba3a3a" : "#182431";
-          drawCell(ctx, cellX, y, locationWidth, rowHeight, condition, { fill, color, align: "center", weight: 700, size: small ? 7 : 8 });
-          cellX += locationWidth;
+          drawCell(ctx, conditionX + index * markWidth, y, markWidth, rowHeight, condition === "B" ? "X" : "", { align: "center", weight: 700, size: small ? 8 : 11, padding: 1 });
+          drawCell(ctx, conditionX + conditionHalf + index * markWidth, y, markWidth, rowHeight, condition === "M" ? "X" : "", { align: "center", weight: 700, size: small ? 8 : 11, padding: 1 });
         });
         const summary = observationSummary(zone, itemId);
-        drawCell(ctx, cellX, y, causeWidth, rowHeight, summary.causes, { align: "center", weight: 700, size: small ? 6.2 : 7 });
-        drawCell(ctx, cellX + causeWidth, y, observationWidth, rowHeight, summary.observations, { size: small ? 5.8 : 6.8, padding: 3, maxLines: 2 });
+        drawCell(ctx, causeX, y, causeWidth, rowHeight, summary.causes, { align: "center", weight: 700, size: small ? 7 : 8.5, padding: 2, maxLines: 2 });
+        drawCell(ctx, observationX, y, observationWidth, rowHeight, summary.observations, { size: small ? 7 : 8.5, padding: 4, maxLines: 2 });
         y += rowHeight;
       });
     });
@@ -703,59 +725,22 @@
   function drawZonePage(pageNumber, zone, data) {
     const { canvas, ctx } = createPage();
     drawHeader(ctx, pageNumber, zone.name.toUpperCase());
-    const start = drawIdentity(ctx, data, 74) + 10;
-    drawZoneTable(ctx, zone, start, { maxHeight: PAGE_HEIGHT - start - 34 });
-    setFont(ctx, 8, 700); ctx.fillStyle = "#465664"; ctx.textAlign = "left"; ctx.fillText("B: BUENO · M: MALO · U: ATRIBUIBLE AL USUARIO · D: ATRIBUIBLE AL DISEÑO · T: ATRIBUIBLE AL TIEMPO", 44, PAGE_HEIGHT - 20);
+    const start = pageNumber === 1 ? drawIdentity(ctx, data) + 16 : 48;
+    const maxRowHeight = pageNumber === 1 ? 31 : pageNumber === 3 ? 51 : 40;
+    drawZoneTable(ctx, zone, start, { maxHeight: PAGE_HEIGHT - start - 48, maxRowHeight });
     return canvas;
   }
 
-  function drawBodegaVariosPage(data) {
-    const { canvas, ctx } = createPage();
-    drawHeader(ctx, 5, "BODEGA, VARIOS Y CONSUMOS BÁSICOS");
-    let y = drawIdentity(ctx, data, 74) + 9;
-    y = drawZoneTable(ctx, zones[4], y, { maxHeight: 230, rowHeight: 21 });
-    y += 13;
-    y = drawZoneTable(ctx, zones[5], y, { maxHeight: 290, rowHeight: 21 });
-    y += 14;
-    const margin = 44;
-    const width = PAGE_WIDTH - 88;
-    drawCell(ctx, margin, y, width, 29, "CONSUMOS BÁSICOS", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 9 });
-    y += 29;
-    const labelWidth = 270;
-    const readingWidth = 250;
-    drawCell(ctx, margin, y, labelWidth, 26, "ÍTEM", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + labelWidth, y, readingWidth, 26, "DEVOLUCIÓN", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + labelWidth + readingWidth, y, readingWidth, 26, "ENTREGA", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + labelWidth + readingWidth * 2, y, width - labelWidth - readingWidth * 2, 26, "OBSERVACIONES", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    y += 26;
-    consumptionItems.forEach(([id, label]) => {
-      drawCell(ctx, margin, y, labelWidth, 25, label.toUpperCase(), { weight: 700, size: 7.6 });
-      drawCell(ctx, margin + labelWidth, y, readingWidth, 25, data[`cons_${id}_devolucion`] || "", { size: 8 });
-      drawCell(ctx, margin + labelWidth + readingWidth, y, readingWidth, 25, data[`cons_${id}_entrega`] || "", { size: 8 });
-      drawCell(ctx, margin + labelWidth + readingWidth * 2, y, width - labelWidth - readingWidth * 2, 25, data[`cons_${id}_observacion`] || "", { size: 7.5 });
-      y += 25;
-    });
-    y += 12;
-    drawCell(ctx, margin, y, width, 29, "CONDICIÓN FINAL DE LA VIVIENDA", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 9 });
-    y += 29;
-    drawCell(ctx, margin, y, width * 0.28, 34, `RESULTADO: ${data.condicionFinal || ""}`, { fill: "#edf1f3", weight: 700, size: 8 });
-    drawCell(ctx, margin + width * 0.28, y, width * 0.72, 34, `OBSERVACIONES: ${data.observacionesFinales || ""}`, { size: 7.5, maxLines: 2 });
-    y += 42;
-    drawCell(ctx, margin, y, width, 48, "El usuario que devuelve la vivienda declara no mantener deudas pendientes que perjudiquen al nuevo usuario. Asimismo, garantiza por un período de un mes que los trabajos de pintura y elementos de grifería no presentarán observaciones.", { fill: "#f7f8f8", size: 8, padding: 9, maxLines: 3 });
-    return canvas;
-  }
-
-  function drawSignature(ctx, key, title, name, x, y, width, height) {
-    ctx.strokeStyle = "#56616a"; ctx.lineWidth = 1; ctx.strokeRect(x, y, width, height);
+  function drawSignatureLine(ctx, key, title, name, x, y, width, height) {
     const pad = state.signaturePads[key];
+    const inkX = x + 24;
+    const inkY = y + 4;
+    const inkWidth = width - 48;
+    const inkHeight = height - 62;
     if (pad?.strokes.length) {
-      const inkX = x + 24;
-      const inkY = y + 9;
-      const inkWidth = width - 48;
-      const inkHeight = height - 56;
       ctx.save();
-      ctx.strokeStyle = "#102f48";
-      ctx.lineWidth = 2.4;
+      ctx.strokeStyle = "#111";
+      ctx.lineWidth = 2.6;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       pad.strokes.forEach((stroke) => {
@@ -766,52 +751,88 @@
           const pointY = inkY + point.y * inkHeight;
           if (index === 0) ctx.moveTo(pointX, pointY); else ctx.lineTo(pointX, pointY);
         });
-        if (stroke.length === 1) ctx.lineTo(inkX + stroke[0].x * inkWidth + 0.4, inkY + stroke[0].y * inkHeight + 0.4);
         ctx.stroke();
       });
       ctx.restore();
     }
-    ctx.beginPath(); ctx.moveTo(x + 24, y + height - 42); ctx.lineTo(x + width - 24, y + height - 42); ctx.stroke();
-    setFont(ctx, 8.5, 700); ctx.fillStyle = "#26323b"; ctx.textAlign = "center"; ctx.fillText(title.toUpperCase(), x + width / 2, y + height - 27);
-    setFont(ctx, 7.5, 400); ctx.fillStyle = "#56616a"; ctx.fillText(name || "Grado y nombre", x + width / 2, y + height - 13);
+    ctx.strokeStyle = "#111"; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x + 18, y + height - 43); ctx.lineTo(x + width - 18, y + height - 43); ctx.stroke();
+    setFont(ctx, 12, 700); ctx.fillStyle = "#111"; ctx.textAlign = "center"; ctx.fillText(title.toUpperCase(), x + width / 2, y + height - 27);
+    setFont(ctx, 10, 400); ctx.fillText(name || "Grado y nombre", x + width / 2, y + height - 11);
   }
 
-  function drawSignaturesPage(data) {
-    const { canvas, ctx } = createPage();
-    drawHeader(ctx, 6, "FIRMAS Y USO SUBDEPTO. GESTIÓN FINANCIERA");
-    let y = drawIdentity(ctx, data, 74) + 12;
-    const margin = 44;
-    const fullWidth = PAGE_WIDTH - 88;
-    const gap = 14;
-    const cardWidth = (fullWidth - gap * 2) / 3;
-    const cardHeight = 230;
-    signatureDefinitions.forEach(([key, title], index) => {
-      const row = Math.floor(index / 3);
-      const column = index % 3;
-      drawSignature(ctx, key, title, data[`firmaNombre_${key}`], margin + column * (cardWidth + gap), y + row * (cardHeight + gap), cardWidth, cardHeight);
-    });
-    y += cardHeight * 2 + gap + 18;
-    drawCell(ctx, margin, y, fullWidth, 30, "USO SUBDEPTO. GESTIÓN FINANCIERA", { fill: "#273746", color: "#fff", align: "center", weight: 700, size: 10 });
-    y += 30;
-    const first = 260;
-    const other = (fullWidth - first) / 3;
-    drawCell(ctx, margin, y, first, 30, "ÍTEM", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + first, y, other, 30, "DEVOLUCIÓN · CESE DESCUENTO", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + first + other, y, other, 30, "ENTREGA · INICIO DESCUENTO", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    drawCell(ctx, margin + first + other * 2, y, other, 30, "NOMBRE RESPONSABLE", { fill: "#edf1f3", align: "center", weight: 700, size: 8 });
-    y += 30;
-    const financeRows = [
+  function drawFinanceTable(ctx, data, x, y, width) {
+    drawCell(ctx, x, y, width, 32, "USO SUBDEPTO. GESTIÓN FINANCIERA", { fill: "#30363b", color: "#fff", align: "center", weight: 700, size: 13 });
+    y += 32;
+    const itemWidth = 210;
+    const other = (width - itemWidth) / 3;
+    drawCell(ctx, x, y, itemWidth, 54, "ÍTEM", { align: "center", weight: 700, size: 11 });
+    drawCell(ctx, x + itemWidth, y, other, 27, "DEVOLUCIÓN", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, x + itemWidth, y + 27, other, 27, "CESE DESCUENTO", { align: "center", weight: 700, size: 9 });
+    drawCell(ctx, x + itemWidth + other, y, other, 27, "ENTREGA", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, x + itemWidth + other, y + 27, other, 27, "INICIO DESCUENTO", { align: "center", weight: 700, size: 9 });
+    drawCell(ctx, x + itemWidth + other * 2, y, other, 54, "NOMBRE RESPONSABLE", { align: "center", weight: 700, size: 10 });
+    y += 54;
+    const rows = [
       ["DRAA 5,5%", formatDate(data.draaCese), formatDate(data.draaInicio), data.responsableFinanzas || ""],
-      ["Gasto común", formatDate(data.gastoCese), formatDate(data.gastoInicio), ""],
-      ["Fecha", formatDate(data.fechaGestion), "", ""],
+      ["GASTO COMÚN", formatDate(data.gastoCese), formatDate(data.gastoInicio), ""],
+      ["FECHA", formatDate(data.fechaGestion), "", ""],
     ];
-    financeRows.forEach((row) => {
-      drawCell(ctx, margin, y, first, 38, row[0], { weight: 700, size: 8.5 });
-      drawCell(ctx, margin + first, y, other, 38, row[1], { align: "center", size: 8.5 });
-      drawCell(ctx, margin + first + other, y, other, 38, row[2], { align: "center", size: 8.5 });
-      drawCell(ctx, margin + first + other * 2, y, other, 38, row[3], { align: "center", size: 8.5 });
+    rows.forEach((row) => {
+      drawCell(ctx, x, y, itemWidth, 38, row[0], { weight: 700, size: 10 });
+      drawCell(ctx, x + itemWidth, y, other, 38, row[1], { align: "center", size: 10 });
+      drawCell(ctx, x + itemWidth + other, y, other, 38, row[2], { align: "center", size: 10 });
+      drawCell(ctx, x + itemWidth + other * 2, y, other, 38, row[3], { align: "center", size: 9 });
       y += 38;
     });
+    return y;
+  }
+
+  function drawBodegaVariosPage(data) {
+    const { canvas, ctx } = createPage();
+    let y = 44;
+    const margin = 54;
+    const width = PAGE_WIDTH - 108;
+    y = drawZoneTable(ctx, zones[4], y, { width, rowHeight: 21 });
+    y += 12;
+    y = drawZoneTable(ctx, zones[5], y, { width, rowHeight: 21 });
+    y += 12;
+    drawCell(ctx, margin, y, width, 32, "CONSUMOS BÁSICOS", { fill: "#30363b", color: "#fff", align: "center", weight: 700, size: 13 });
+    y += 32;
+    const labelWidth = 250;
+    const readingWidth = 230;
+    drawCell(ctx, margin, y, labelWidth, 42, "ÍTEM", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, margin + labelWidth, y, readingWidth, 42, "DEVOLUCIÓN", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, margin + labelWidth + readingWidth, y, readingWidth, 42, "ENTREGA", { align: "center", weight: 700, size: 10 });
+    drawCell(ctx, margin + labelWidth + readingWidth * 2, y, width - labelWidth - readingWidth * 2, 42, "OBSERVACIONES", { align: "center", weight: 700, size: 10 });
+    y += 42;
+    consumptionItems.forEach(([id, label]) => {
+      drawCell(ctx, margin, y, labelWidth, 28, label.toUpperCase(), { weight: 700, size: 9 });
+      drawCell(ctx, margin + labelWidth, y, readingWidth, 28, data[`cons_${id}_devolucion`] || "", { size: 9 });
+      drawCell(ctx, margin + labelWidth + readingWidth, y, readingWidth, 28, data[`cons_${id}_entrega`] || "", { size: 9 });
+      drawCell(ctx, margin + labelWidth + readingWidth * 2, y, width - labelWidth - readingWidth * 2, 28, data[`cons_${id}_observacion`] || "", { size: 8.5 });
+      y += 28;
+    });
+    y += 10;
+    drawCell(ctx, margin, y, width, 32, "CONDICIÓN FINAL DE LA VIVIENDA (Tarjar lo que no corresponda)", { fill: "#30363b", color: "#fff", align: "center", weight: 700, size: 12 });
+    y += 32;
+    const finalWidth = width / 3;
+    [["Aceptada", "ACEPTADA"], ["Aceptada con observaciones", "ACEPTADA CON OBSERVACIONES"], ["Rechazada", "RECHAZADA"]].forEach(([value, label], index) => {
+      drawCell(ctx, margin + finalWidth * index, y, finalWidth, 38, `${label}${data.condicionFinal === value ? "   X" : ""}`, { align: "center", weight: 700, size: 10 });
+    });
+    y += 38;
+    drawCell(ctx, margin, y, width, 62, `OBSERVACIONES: ${data.observacionesFinales || ""}\nEl usuario que devuelve la vivienda declara no mantener deudas pendientes que perjudiquen al nuevo usuario. Asimismo, garantiza por un período de un mes que los trabajos de pintura y elementos de grifería no presentarán observaciones.`, { size: 8.5, padding: 8, maxLines: 4 });
+    y += 76;
+    const signatureWidth = 330;
+    drawSignatureLine(ctx, "devuelve", "Devuelve", data.firmaNombre_devuelve, margin + 22, y, signatureWidth, 118);
+    drawSignatureLine(ctx, "inspector1", "Inspector VV.FF.", data.firmaNombre_inspector1, margin + width - signatureWidth - 22, y, signatureWidth, 118);
+    y += 105;
+    drawSignatureLine(ctx, "recibe", "Recibe", data.firmaNombre_recibe, margin + 22, y, signatureWidth, 118);
+    drawSignatureLine(ctx, "inspector2", "Inspector VV.FF.", data.firmaNombre_inspector2, margin + width - signatureWidth - 22, y, signatureWidth, 118);
+    y += 95;
+    drawSignatureLine(ctx, "encargado", "Encargado Depto. VV.FF.", data.firmaNombre_encargado, margin + (width - signatureWidth) / 2, y, signatureWidth, 118);
+    y += 126;
+    drawFinanceTable(ctx, data, margin, y, width);
     return canvas;
   }
 
@@ -823,7 +844,6 @@
       drawZonePage(3, zones[2], data),
       drawZonePage(4, zones[3], data),
       drawBodegaVariosPage(data),
-      drawSignaturesPage(data),
     ];
     renderPreviewTabs();
     showPreviewPage(state.previewPage);
