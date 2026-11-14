@@ -111,6 +111,64 @@
     return isIOSDevice() ? "opened" : "downloaded";
   }
 
+  function installFullscreenSignature(pad, options = {}) {
+    const wrapper = pad?.canvas?.closest?.(".signature-pad");
+    if (!wrapper || wrapper.dataset.fullscreenReady === "true") return;
+    wrapper.dataset.fullscreenReady = "true";
+
+    const launcher = document.createElement("button");
+    launcher.type = "button";
+    launcher.className = "expand-signature";
+    launcher.setAttribute("aria-expanded", "false");
+    launcher.textContent = "Firmar en pantalla completa";
+    wrapper.before(launcher);
+
+    const toolbar = document.createElement("div");
+    toolbar.className = "signature-fullscreen-bar";
+    const heading = document.createElement("div");
+    const kicker = document.createElement("small");
+    kicker.textContent = "Firma a pantalla completa";
+    const title = document.createElement("strong");
+    title.textContent = options.title || "Firma";
+    heading.append(kicker, title);
+    const actions = document.createElement("div");
+    const clear = document.createElement("button");
+    clear.type = "button";
+    clear.className = "signature-fullscreen-clear";
+    clear.textContent = "Limpiar";
+    const done = document.createElement("button");
+    done.type = "button";
+    done.className = "signature-fullscreen-done";
+    done.textContent = "Listo";
+    actions.append(clear, done);
+    toolbar.append(heading, actions);
+    wrapper.prepend(toolbar);
+
+    const resize = () => window.requestAnimationFrame(() => options.onResize?.());
+    const close = () => {
+      if (!wrapper.classList.contains("is-fullscreen")) return;
+      wrapper.classList.remove("is-fullscreen");
+      document.body.classList.remove("signature-mode");
+      launcher.setAttribute("aria-expanded", "false");
+      options.onClose?.();
+      resize();
+      launcher.focus({ preventScroll: true });
+    };
+    const open = () => {
+      document.querySelectorAll(".signature-pad.is-fullscreen").forEach((element) => element.classList.remove("is-fullscreen"));
+      wrapper.classList.add("is-fullscreen");
+      document.body.classList.add("signature-mode");
+      launcher.setAttribute("aria-expanded", "true");
+      resize();
+      done.focus({ preventScroll: true });
+    };
+
+    launcher.addEventListener("click", open);
+    done.addEventListener("click", close);
+    clear.addEventListener("click", () => { options.onClear?.(); resize(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && wrapper.classList.contains("is-fullscreen")) close(); });
+  }
+
   window.ActaSecurity = Object.freeze({
     clearDraft,
     loadDraft,
@@ -119,6 +177,7 @@
     cleanSignatures,
     deliverPdf,
     isIOSDevice,
+    installFullscreenSignature,
     pdfActionLabel: isIOSDevice() ? "Guardar / compartir PDF" : "Descargar PDF",
     limits: Object.freeze({
       maxSignatureStrokes: MAX_SIGNATURE_STROKES,
