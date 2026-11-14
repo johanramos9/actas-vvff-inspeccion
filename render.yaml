@@ -6,6 +6,9 @@ services:
     staticPublishPath: .
     headers:
       - path: /*
+        name: Cache-Control
+        value: "no-cache, no-store, must-revalidate"
+      - path: /*
         name: Content-Security-Policy
         value: "default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; frame-ancestors 'none'"
       - path: /*
