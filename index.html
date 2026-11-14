@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d2c46" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; media-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'" />
+    <meta
+      name="description"
+      content="Prototipo local para completar, firmar y exportar actas de vivienda fiscal."
+    />
+    <title>Actas VV.FF. · Inspección de vivienda</title>
+    <link rel="stylesheet" href="styles.css?v=20261114-1" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Inicio Actas Vivienda Fiscal">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img">
+              <path d="M8 23.4 24 10l16 13.4v16a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3v-16Z" />
+              <path d="M18 42V28h12v14M6 25 24 10l18 15" />
+              <path d="M35 10v8" />
+            </svg>
+          </span>
+          <span>
+            <strong>Actas VV.FF.</strong>
+            <small>Inspección de vivienda fiscal</small>
+          </span>
+        </a>
+        <nav class="acta-switcher" aria-label="Seleccionar tipo de acta">
+          <a class="is-active" href="index.html" aria-current="page"><span>Acta</span> 1</a>
+          <a href="acta2.html"><span>Acta</span> 2</a>
+          <a href="acta3.html"><span>Acta</span> 3</a>
+        </nav>
+        <div class="status-pill"><span></span> Demo local</div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" aria-label="Progreso del acta">
+          <div class="sidebar-intro">
+            <span class="eyebrow">Acta 01</span>
+            <h1>Entrega o devolución</h1>
+            <p>Completa la inspección y obtén el documento listo para respaldo.</p>
+          </div>
+
+          <div class="progress-card">
+            <div class="progress-copy">
+              <span>Avance del acta</span>
+              <strong id="progressValue">0%</strong>
+            </div>
+            <progress class="progress-track" id="progressBar" max="100" value="0" aria-label="Avance del acta"></progress>
+            <small id="draftStatus">Borrador guardado en este dispositivo</small>
+          </div>
+
+          <nav class="steps" aria-label="Secciones del acta">
+            <button class="step is-active" type="button" data-step-target="0">
+              <span class="step-number">1</span>
+              <span><strong>Antecedentes</strong><small>Persona y vivienda</small></span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+            <button class="step" type="button" data-step-target="1">
+              <span class="step-number">2</span>
+              <span><strong>Inspección</strong><small>Motivo y dormitorios</small></span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+            <button class="step" type="button" data-step-target="2">
+              <span class="step-number">3</span>
+              <span><strong>Cierre</strong><small>Condición y finanzas</small></span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+            <button class="step" type="button" data-step-target="3">
+              <span class="step-number">4</span>
+              <span><strong>Firmas</strong><small>Firmas en pantalla</small></span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+            <button class="step" type="button" data-step-target="4">
+              <span class="step-number">5</span>
+              <span><strong>Documento</strong><small>Revisar y exportar</small></span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+          </nav>
+
+          <div class="privacy-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5z" /></svg>
+            <span><strong>Datos locales</strong>No se envían al servidor y el borrador vence tras 12 horas.</span>
+          </div>
+        </aside>
+
+        <main class="main-content">
+          <form id="actaForm" autocomplete="off">
+            <section class="form-step is-active" data-step="0" aria-labelledby="step0Title">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Paso 1 de 5</span>
+                  <h2 id="step0Title">Antecedentes del acta</h2>
+                  <p>Identifica al funcionario y la vivienda fiscal inspeccionada.</p>
+                </div>
+                <span class="section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 21v-9l8-7 8 7v9M9 21v-6h6v6M3 12l9-10 9 10" /></svg>
+                </span>
+              </div>
+
+              <div class="form-card">
+                <div class="card-heading">
+                  <span class="card-kicker">Funcionario</span>
+                  <h3>Datos personales</h3>
+                </div>
+                <div class="field-grid cols-3">
+                  <label class="field">
+                    <span>Grado <em>Recomendado</em></span>
+                    <input name="grado" type="text" placeholder="Ej. Sargento 1°" maxlength="40" autocomplete="off" />
+                  </label>
+                  <label class="field">
+                    <span>N° de empleado</span>
+                    <input name="empleado" inputmode="numeric" type="text" placeholder="Ej. 123456" maxlength="10" autocomplete="off" />
+                    <small class="field-help">Solo números, máximo 10 dígitos.</small>
+                  </label>
+                  <label class="field">
+                    <span>RUT</span>
+                    <input name="rut" type="text" inputmode="text" placeholder="12.345.678-5" maxlength="12" autocomplete="off" />
+                    <small class="field-help">Se revisará el dígito verificador.</small>
+                  </label>
+                  <label class="field span-2">
+                    <span>Nombre completo <em>Recomendado</em></span>
+                    <input name="nombre" type="text" placeholder="Nombres y apellidos" maxlength="80" autocomplete="off" />
+                  </label>
+                  <label class="field">
+                    <span>Unidad</span>
+                    <input name="unidad" type="text" placeholder="Unidad de destino" maxlength="60" autocomplete="off" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-card">
+                <div class="card-heading">
+                  <span class="card-kicker">Vivienda fiscal</span>
+                  <h3>Ubicación y fecha</h3>
+                </div>
+                <div class="field-grid cols-2">
+                  <label class="field">
+                    <span>Villa FACH</span>
+                    <input name="villa" type="text" placeholder="Nombre de la villa" maxlength="80" autocomplete="off" />
+                  </label>
+                  <label class="field">
+                    <span>Fecha del acta <em>Recomendado</em></span>
+                    <input name="fecha" type="date" />
+                  </label>
+                  <label class="field span-2">
+                    <span>Dirección</span>
+                    <input name="direccion" type="text" placeholder="Calle, número, block o departamento" maxlength="120" autocomplete="off" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="tip-card">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 11v6M12 7h.01" /></svg>
+                <p><strong>El formulario admite campos pendientes.</strong> Puedes generar un PDF de prueba aunque aún no tengas toda la información.</p>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="1" aria-labelledby="step1Title" hidden>
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Paso 2 de 5</span>
+                  <h2 id="step1Title">Motivo e inspección</h2>
+                  <p>Selecciona el tipo de acta y registra el estado de cada elemento.</p>
+                </div>
+                <span class="section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M9 11 12 14 22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                </span>
+              </div>
+
+              <div class="form-card">
+                <div class="card-heading inline-heading">
+                  <div><span class="card-kicker">Motivo del acta</span><h3>¿Qué operación se realiza?</h3></div>
+                  <span class="selection-hint">Selecciona una opción</span>
+                </div>
+                <div class="choice-grid" id="motiveChoices">
+                  <label class="choice-card">
+                    <input type="radio" name="motivo" value="Entrega 1ª vez" />
+                    <span class="choice-check"></span><strong>Entrega 1ª vez</strong><small>Primera asignación</small>
+                  </label>
+                  <label class="choice-card">
+                    <input type="radio" name="motivo" value="Entrega por cambio" />
+                    <span class="choice-check"></span><strong>Entrega por cambio</strong><small>Cambio de vivienda</small>
+                  </label>
+                  <label class="choice-card">
+                    <input type="radio" name="motivo" value="Devolución definitiva" />
+                    <span class="choice-check"></span><strong>Devolución definitiva</strong><small>Término de asignación</small>
+                  </label>
+                  <label class="choice-card">
+                    <input type="radio" name="motivo" value="Devolución por cambio" />
+                    <span class="choice-check"></span><strong>Devolución por cambio</strong><small>Traslado de vivienda</small>
+                  </label>
+                </div>
+              </div>
+
+              <div class="inspection-toolbar">
+                <div>
+                  <span class="eyebrow">Dormitorios 1 al 5</span>
+                  <h3>Lista de revisión</h3>
+                  <p>Funciona igual que el acta en papel: toca la casilla que deseas marcar con un ✓.</p>
+                </div>
+                <div class="paper-help" aria-label="Instrucciones para marcar">
+                  <span class="paper-help-check">✓</span>
+                  <span><strong>Marca una casilla</strong><small>Bueno o Malo · Dormitorio 1–5</small></span>
+                </div>
+              </div>
+              <div id="inspectionGroups" class="inspection-groups"></div>
+            </section>
+
+            <section class="form-step" data-step="2" aria-labelledby="step2Title" hidden>
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Paso 3 de 5</span>
+                  <h2 id="step2Title">Cierre del acta</h2>
+                  <p>Indica el resultado final y completa la información administrativa.</p>
+                </div>
+                <span class="section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M20 7 9 18l-5-5M12 2a10 10 0 1 0 10 10" /></svg>
+                </span>
+              </div>
+
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Condición final</span><h3>Resultado de la vivienda</h3></div>
+                <div class="final-choice-grid">
+                  <label class="final-choice accepted">
+                    <input type="radio" name="condicionFinal" value="Aceptada" />
+                    <span class="final-icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg></span>
+                    <span><strong>Aceptada</strong><small>Sin observaciones pendientes</small></span>
+                  </label>
+                  <label class="final-choice observed">
+                    <input type="radio" name="condicionFinal" value="Aceptada con observaciones" />
+                    <span class="final-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.6 2 18h20L13.7 3.6a2 2 0 0 0-3.4 0Z" /></svg></span>
+                    <span><strong>Con observaciones</strong><small>Aceptada con reparos registrados</small></span>
+                  </label>
+                  <label class="final-choice rejected">
+                    <input type="radio" name="condicionFinal" value="Rechazada" />
+                    <span class="final-icon"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></svg></span>
+                    <span><strong>Rechazada</strong><small>No cumple las condiciones</small></span>
+                  </label>
+                </div>
+                <label class="field textarea-field">
+                  <span>Observaciones generales</span>
+                  <textarea name="observacionesGenerales" rows="4" placeholder="Detalla acuerdos, reparaciones pendientes u otros antecedentes relevantes..."></textarea>
+                  <small class="char-count"><span id="observationsCount">0</span>/600</small>
+                </label>
+              </div>
+
+              <div class="form-card">
+                <div class="card-heading"><span class="card-kicker">Uso sección gestión financiera</span><h3>Control de descuentos</h3></div>
+                <div class="finance-grid">
+                  <label class="field"><span>DRAA 5,5% · Cese descuento</span><input name="draaCese" type="date" /></label>
+                  <label class="field"><span>DRAA 5,5% · Inicio descuento</span><input name="draaInicio" type="date" /></label>
+                  <label class="field"><span>Gasto común · Cese descuento</span><input name="gastoCese" type="date" /></label>
+                  <label class="field"><span>Gasto común · Inicio descuento</span><input name="gastoInicio" type="date" /></label>
+                  <label class="field"><span>Fecha de gestión</span><input name="fechaGestion" type="date" /></label>
+                  <label class="field"><span>Nombre responsable</span><input name="responsableFinanzas" type="text" placeholder="Nombre y cargo" /></label>
+                </div>
+              </div>
+
+              <div class="declaration-card">
+                <span class="declaration-icon"><svg viewBox="0 0 24 24"><path d="M7 3h10v4H7zM5 5H3v16h18V5h-2M7 12h10M7 16h7" /></svg></span>
+                <div><strong>Declaración incluida en el documento</strong><p>Quien devuelve la vivienda declara no mantener deudas pendientes que perjudiquen al nuevo usuario y garantiza por un mes los trabajos indicados en el acta.</p></div>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="3" aria-labelledby="step3Title" hidden>
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Paso 4 de 5</span>
+                  <h2 id="step3Title">Firmas en pantalla</h2>
+                  <p>Firma con el dedo, lápiz táctil o mouse. Cada firma se incorpora al PDF.</p>
+                </div>
+                <span class="section-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m3 21 3.5-1 12-12-2.5-2.5-12 12L3 21ZM14.5 7 17 9.5M15 4.5l2-2a2 2 0 0 1 3 3l-2 2" /></svg>
+                </span>
+              </div>
+
+              <div class="signature-grid">
+                <article class="signature-card">
+                  <div class="signature-heading"><div><span class="card-kicker">Firma 01</span><h3>Quien devuelve</h3></div><button type="button" class="clear-signature" data-clear-signature="devuelve">Limpiar</button></div>
+                  <label class="field"><span>Grado y nombre</span><input name="nombreDevuelve" type="text" placeholder="Grado y nombre completo" /></label>
+                  <div class="signature-pad"><canvas id="signature-devuelve" data-signature="devuelve" aria-label="Área de firma de quien devuelve"></canvas><span>Firme dentro del recuadro</span></div>
+                </article>
+                <article class="signature-card">
+                  <div class="signature-heading"><div><span class="card-kicker">Firma 02</span><h3>Quien recibe</h3></div><button type="button" class="clear-signature" data-clear-signature="recibe">Limpiar</button></div>
+                  <label class="field"><span>Grado y nombre</span><input name="nombreRecibe" type="text" placeholder="Grado y nombre completo" /></label>
+                  <div class="signature-pad"><canvas id="signature-recibe" data-signature="recibe" aria-label="Área de firma de quien recibe"></canvas><span>Firme dentro del recuadro</span></div>
+                </article>
+                <article class="signature-card">
+                  <div class="signature-heading"><div><span class="card-kicker">Firma 03</span><h3>Inspector VV.FF.</h3></div><button type="button" class="clear-signature" data-clear-signature="inspector">Limpiar</button></div>
+                  <label class="field"><span>Nombre del inspector</span><input name="nombreInspector" type="text" placeholder="Nombre completo" /></label>
+                  <div class="signature-pad"><canvas id="signature-inspector" data-signature="inspector" aria-label="Área de firma del inspector"></canvas><span>Firme dentro del recuadro</span></div>
+                </article>
+                <article class="signature-card">
+                  <div class="signature-heading"><div><span class="card-kicker">Firma 04</span><h3>Encargado Depto. VV.FF.</h3></div><button type="button" class="clear-signature" data-clear-signature="encargado">Limpiar</button></div>
+                  <label class="field"><span>Nombre del encargado</span><input name="nombreEncargado" type="text" placeholder="Nombre completo" /></label>
+                  <div class="signature-pad"><canvas id="signature-encargado" data-signature="encargado" aria-label="Área de firma del encargado"></canvas><span>Firme dentro del recuadro</span></div>
+                </article>
+              </div>
+
+              <div class="tip-card">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 11v6M12 7h.01" /></svg>
+                <p><strong>En tablets y celulares:</strong> puedes apoyar la mano y firmar directamente dentro del recuadro. Usa “Limpiar” para repetir una firma.</p>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="4" aria-labelledby="step4Title" hidden>
+              <div class="section-heading document-heading">
+                <div>
+                  <span class="eyebrow">Paso 5 de 5</span>
+                  <h2 id="step4Title">Documento listo para revisar</h2>
+                  <p>La vista previa reproduce las dos páginas del acta entregada.</p>
+                </div>
+                <button type="button" class="button secondary" id="refreshPreview">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v6h-6M4 18v-6h6M18.5 9A7 7 0 0 0 6 6.5L4 9M5.5 15A7 7 0 0 0 18 17.5l2-2.5" /></svg>
+                  Actualizar vista
+                </button>
+              </div>
+
+              <div class="export-card">
+                <div class="export-icon"><svg viewBox="0 0 24 24"><path d="M7 2h7l5 5v15H7zM14 2v5h5M12 11v7M9 15l3 3 3-3" /></svg></div>
+                <div><span class="card-kicker">Exportación local</span><h3>Acta de entrega y/o devolución</h3><p id="exportSummary">El PDF se creará en este dispositivo, sin subir datos.</p></div>
+                <div class="export-actions">
+                  <button type="button" class="button primary download-button" id="downloadPdf">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+                    Descargar PDF
+                  </button>
+                  <button type="button" class="button secondary new-act-button" id="startNewActa">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    Nueva acta
+                  </button>
+                </div>
+              </div>
+
+              <div class="resume-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7" /></svg>
+                <span><strong>Puedes retomarla cuando quieras.</strong> El borrador queda guardado automáticamente en este dispositivo hasta que elijas “Nueva acta”.</span>
+              </div>
+
+              <div class="preview-toolbar">
+                <div><strong>Vista previa</strong><span>2 páginas · formato A4</span></div>
+                <div class="preview-tabs" role="tablist" aria-label="Páginas del documento">
+                  <button class="is-active" type="button" data-preview-page="0">Página 1</button>
+                  <button type="button" data-preview-page="1">Página 2</button>
+                </div>
+              </div>
+              <div class="document-preview" aria-live="polite">
+                <div class="paper is-active" data-paper="0"><canvas id="previewPage1"></canvas></div>
+                <div class="paper" data-paper="1" hidden><canvas id="previewPage2"></canvas></div>
+              </div>
+            </section>
+          </form>
+
+          <footer class="form-actions">
+            <button type="button" class="button ghost" id="previousStep" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+              Anterior
+            </button>
+            <div class="step-counter"><span id="stepCounter">1</span> de 5</div>
+            <button type="button" class="button primary" id="nextStep">
+              Continuar
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+      <span>Guardado</span>
+    </div>
+
+    <div class="modal-backdrop" id="finishModal" hidden>
+      <section class="finish-modal" role="dialog" aria-modal="true" aria-labelledby="finishModalTitle" aria-describedby="finishModalDescription">
+        <div class="finish-modal-icon" id="finishModalIcon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+        </div>
+        <span class="card-kicker" id="finishModalKicker">Descarga completada</span>
+        <h2 id="finishModalTitle">PDF descargado correctamente</h2>
+        <p id="finishModalDescription">¿Qué deseas hacer con los datos de esta acta?</p>
+        <div class="finish-options">
+          <button type="button" class="finish-option keep" id="keepDraft">
+            <span class="finish-option-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M5.6 15A8 8 0 0 0 19 17M18.4 9A8 8 0 0 0 5 7" /></svg></span>
+            <span><strong>Mantener borrador</strong><small>Podrás retomarla después</small></span>
+          </button>
+          <button type="button" class="finish-option new" id="confirmNewActa">
+            <span class="finish-option-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></span>
+            <span><strong>Iniciar nueva acta</strong><small>Limpiará campos y firmas</small></span>
+          </button>
+        </div>
+        <button type="button" class="modal-cancel" id="cancelFinishModal">Cancelar</button>
+      </section>
+    </div>
+
+    <script src="security.js?v=20261114-1"></script>
+    <script src="validation.js?v=20261114-1"></script>
+    <script src="app.js?v=20261114-1"></script>
+  </body>
+</html>
